@@ -19,7 +19,8 @@
  */
 package org.flywaydb.core.internal.configuration.resolvers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -141,7 +142,9 @@ public class EnvironmentResolver {
         if (clazz != null) {
             try {
                 final var data = environmentModel.getResolvers().get(key);
-                return (ConfigurationExtension) new ObjectMapper().convertValue(data, clazz);
+                return (ConfigurationExtension) new ObjectMapper().rebuild()
+                    .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false).build()
+                    .convertValue(data, clazz);
             } catch (final IllegalArgumentException e) {
                 throw new FlywayException("Error reading resolver configuration for resolver " + key,
                     e,

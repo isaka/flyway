@@ -23,6 +23,7 @@ import lombok.CustomLog;
 import lombok.experimental.ExtensionMethod;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.internal.database.base.Database;
+import org.flywaydb.core.internal.license.AuthMethod;
 import org.flywaydb.core.internal.license.FlywayEditionUpgradeRequiredException;
 import org.flywaydb.core.internal.license.FlywayPermit;
 
@@ -60,7 +61,8 @@ public class LicenseGuard {
 
 
 
-     private static final FlywayPermit OSS_PERMIT = new FlywayPermit("Anonymous", null, null, false, false, false);
+
+         private static final FlywayPermit OSS_PERMIT = new FlywayPermit("Anonymous", null, null, false, false, null);
 
 
     public static void guard(Configuration configuration, List<Tier> editions, String featureName) {

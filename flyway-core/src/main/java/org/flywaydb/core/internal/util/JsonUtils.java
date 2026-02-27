@@ -22,17 +22,17 @@ package org.flywaydb.core.internal.util;
 import static org.flywaydb.core.internal.util.FileUtils.createDirIfNotExists;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonToken;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -65,11 +65,11 @@ public class JsonUtils {
 
     public static JsonMapper getJsonMapper() {
         return JsonMapper.builder()
-            .addModule(new JavaTimeModule())
             .configure(SerializationFeature.INDENT_OUTPUT, true)
-            .configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, true)
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .serializationInclusion(Include.ALWAYS)
+            .configure(DateTimeFeature.WRITE_DATES_WITH_ZONE_ID, true)
+            .configure(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(Include.ALWAYS))
+            .changeDefaultPropertyInclusion(incl -> incl.withContentInclusion(Include.ALWAYS))
 
             // NOTE: This is a workaround while we use both GSON and ObjectMapper
             // Once we fully migrate to ObjectMapper, we can remove this line
@@ -92,20 +92,19 @@ public class JsonUtils {
             return null;
         }
 
-        final var factory = new JsonFactory();
-        try (final var parser = factory.createParser(json)) {
+
+        final var factory = JsonFactory.builder().build();
+        try (final var parser = factory.createParser(ObjectReadContext.empty(), json)) {
             parser.nextToken();
             while (parser.nextToken() != JsonToken.END_OBJECT && parser.currentToken() != null) {
                 if (parser.currentToken().isStructStart()) {
                     // Only look at lop level fields
                     parser.skipChildren();
-                } else if (parser.currentToken() == JsonToken.FIELD_NAME && key.equals(parser.currentName())) {
+                } else if (parser.currentToken() == JsonToken.PROPERTY_NAME && key.equals(parser.currentName())) {
                     parser.nextToken();
-                    return parser.getText();
+                    return parser.getString();
                 }
             }
-        } catch (final IOException e) {
-            throw new FlywayException("Unable to parse JSON: " + e.getMessage(), e);
         }
 
         return null;

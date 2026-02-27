@@ -222,10 +222,14 @@
       <useTransitiveFiltering>true</useTransitiveFiltering>
       <includes>
         <include>org.apache.commons:commons-text</include>
+        <include>tools.jackson.core:jackson-core</include>
         <include>com.fasterxml.jackson.core:jackson-core</include>
         <include>com.fasterxml.jackson.core:jackson-annotations</include>
+        <include>tools.jackson.core:jackson-databind</include>
         <include>com.fasterxml.jackson.core:jackson-databind</include>
+        <include>tools.jackson.dataformat:jackson-dataformat-toml</include>
         <include>com.fasterxml.jackson.dataformat:jackson-dataformat-toml</include>
+        <include>tools.jackson.dataformat:jackson-dataformat-xml</include>
         <include>com.fasterxml.jackson.dataformat:jackson-dataformat-xml</include>
         <include>com.fasterxml.jackson.datatype:jackson-datatype-jsr310</include>
         <include>org.slf4j:slf4j-nop</include>
@@ -398,6 +402,8 @@
         <exclude>org.reactivestreams</exclude>
         <exclude>io.netty:netty-*</exclude>
         <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+        <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+        <exclude>com.fasterxml.jackson.datatype:jackson-datatype-jsr310</exclude>
       </excludes>
     </dependencySet>
     <dependencySet>
@@ -429,9 +435,9 @@
         <exclude>software.amazon.awssdk:s3</exclude>
         <exclude>org.slf4j:slf4j-nop</exclude>
         <exclude>org.apache.commons:commons-text</exclude>
-        <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-xml</exclude>
-        <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-toml</exclude>
-        <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+        <exclude>tools.jackson.dataformat:jackson-dataformat-xml</exclude>
+        <exclude>tools.jackson.dataformat:jackson-dataformat-toml</exclude>
+        <exclude>tools.jackson.core:jackson-databind</exclude>
         <exclude>com.microsoft.azure:msal4j</exclude>
         <exclude>com.azure:azure-identity</exclude>
         <exclude>com.ing.data:cassandra-jdbc-wrapper</exclude>

@@ -5,12 +5,6 @@ redirect_from: Commandsline/
 
 The Flyway command-line tool is a standalone Flyway distribution. It runs on Windows, macOS and Linux and it is primarily meant for users who wish to migrate their database from the command-line without having to integrate Flyway into their applications nor having to install a build tool.
 
-### Flyway Pipelines
-
-[Flyway Pipelines](https://flyway.red-gate.com/) can be used in conjunction with the Flyway CLI to give you a centralized view of deployment status, history and health metrics for every database deployment you and your team make.
-
-Access Flyway Pipelines at [Welcome to Flyway (red-gate.com)](https://flyway.red-gate.com/).
-
 ## Download and installation
 
 ### Windows

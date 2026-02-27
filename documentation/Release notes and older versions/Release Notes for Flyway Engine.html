@@ -8,6 +8,23 @@
 </div>
 <div class="col-md-9">
   <div class="release">
+        <h2 id="12.0.3">Flyway 12.0.3 (2026-02-27)</h2>
+
+        <h3>Bug fixes</h3>
+        <ul>
+            <li>report filenames and drift resolution folder now included in JSON output when check -drift fails with failOnDrift enabled</li>
+            <li>Fixed an issue where Flyway failed when applied migrations specified in 'cherryPick' were not found in Native Connectors mode</li>
+            <li>Oracle Schema History Table synonyms no longer appear as drift in Check reports</li>
+        </ul>
+
+        <h3>Library upgrades</h3>
+        <ul>
+            <li>Upgrade Jackson from 2.19.1 to 3.0.4</li>
+        </ul>
+
+  </div>
+
+  <div class="release">
         <h2 id="12.0.2">Flyway 12.0.2 (2026-02-20)</h2>
 
         <h3>New features</h3>

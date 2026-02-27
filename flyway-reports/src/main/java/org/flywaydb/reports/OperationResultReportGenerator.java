@@ -19,9 +19,10 @@
  */
 package org.flywaydb.reports;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -29,7 +30,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.CustomLog;
@@ -39,11 +39,11 @@ import org.flywaydb.core.api.logging.LogFactory;
 import org.flywaydb.core.api.output.CompositeResult;
 import org.flywaydb.core.api.output.HtmlResult;
 import org.flywaydb.core.api.output.OperationResult;
-import org.flywaydb.core.internal.configuration.ConfigUtils;
 import org.flywaydb.core.internal.configuration.models.FlywayModel;
 import org.flywaydb.core.internal.plugin.PluginRegister;
 import org.flywaydb.core.internal.reports.ReportDetails;
 import org.flywaydb.core.internal.reports.ReportGenerationConfiguration;
+import org.flywaydb.core.internal.reports.ReportPathResolver;
 import org.flywaydb.core.internal.reports.ReportGenerationOutput;
 import org.flywaydb.core.internal.reports.ResultReportGenerator;
 import org.flywaydb.core.internal.util.FileUtils;
@@ -55,11 +55,6 @@ import org.flywaydb.reports.utils.ReportsDeserializer;
 @CustomLog
 public class OperationResultReportGenerator implements ResultReportGenerator {
     private static final String DEFAULT_REPORT_FILENAME = FlywayModel.DEFAULT_REPORT_FILENAME;
-    private static final String JSON_REPORT_EXTENSION = ".json";
-    private static final String HTML_REPORT_EXTENSION = ".html";
-    private static final String HTM_REPORT_EXTENSION = ".htm";
-
-    private static final Pattern REPORT_FILE_PATTERN = Pattern.compile("\\.html?$");
 
     @Override
     public ReportGenerationOutput generateReport(final OperationResult operationResult,
@@ -97,30 +92,22 @@ public class OperationResultReportGenerator implements ResultReportGenerator {
 
     private ReportDetails writeReport(final Configuration configuration,
         final Collection<? extends HtmlResult> filteredResults) {
-        final ReportDetails reportDetails = new ReportDetails();
+        final var reportDetails = new ReportDetails();
+        final var resolvedPaths = ReportPathResolver.resolve(configuration);
         final String reportFilename = configuration.getReportFilename();
-        final String baseReportFilename = getBaseFilename(reportFilename);
-
-        final String jsonReportFilename = baseReportFilename + JSON_REPORT_EXTENSION;
-        final String htmlReportFilename = baseReportFilename + (reportFilename.endsWith(HTM_REPORT_EXTENSION)
-            ? HTM_REPORT_EXTENSION
-            : HTML_REPORT_EXTENSION);
-
-        final String jsonReportAbsolutePath = ConfigUtils.getFilenameWithWorkingDirectory(jsonReportFilename,
-            configuration);
-        final String htmlReportAbsolutePath = ConfigUtils.getFilenameWithWorkingDirectory(htmlReportFilename,
-            configuration);
 
         try {
-            final Collection<HtmlResult> combinedResults = combineWithExistingResultsIfFileExists(jsonReportAbsolutePath,
+            final Collection<HtmlResult> combinedResults = combineWithExistingResultsIfFileExists(Optional.of(
+                    resolvedPaths.jsonReportPath()).map(Path::toString).orElse(null),
                 filteredResults,
                 configuration.getPluginRegister());
             final Collection<HtmlResult> resultsPerOperation = restrictToOneResultPerOperation(combinedResults);
-            reportDetails.setJsonReportFilename(JsonUtils.jsonToFile(jsonReportAbsolutePath,
+            reportDetails.setJsonReportFilename(JsonUtils.jsonToFile(resolvedPaths.jsonReportPath().toString(),
                 new CompositeResult<>(resultsPerOperation)));
-            reportDetails.setHtmlReportFilename(HtmlUtils.toHtmlFile(htmlReportAbsolutePath,
+            reportDetails.setHtmlReportFilename(HtmlUtils.toHtmlFile(resolvedPaths.htmlReportPath().toString(),
                 resultsPerOperation,
                 configuration));
+            return reportDetails;
         } catch (final FlywayException e) {
             if (DEFAULT_REPORT_FILENAME.equals(reportFilename)) {
                 LOG.warn("Unable to create default report files.");
@@ -139,13 +126,6 @@ public class OperationResultReportGenerator implements ResultReportGenerator {
         return result instanceof final CompositeResult<?> compositeResult ? compositeResult.individualResults()
             .stream()
             .flatMap(this::flattenResults) : Stream.of(result);
-    }
-
-    private static String getBaseFilename(final String filename) {
-        if (REPORT_FILE_PATTERN.matcher(filename).find()) {
-            return filename.replaceAll(REPORT_FILE_PATTERN.pattern(), "");
-        }
-        return filename;
     }
 
     private static Collection<HtmlResult> combineWithExistingResultsIfFileExists(final String filename,
@@ -167,10 +147,12 @@ public class OperationResultReportGenerator implements ResultReportGenerator {
             return Collections.emptyList();
         }
 
-        final JsonMapper mapper = JsonUtils.getJsonMapper();
-
         final ReportsDeserializer reportsDeserializer = new ReportsDeserializer(pluginRegister);
-        mapper.registerModule(new SimpleModule().addDeserializer(OperationResult.class, reportsDeserializer));
+        final JsonMapper mapper = JsonUtils.getJsonMapper()
+            .rebuild()
+            .addModule(new SimpleModule().addDeserializer(OperationResult.class, reportsDeserializer))
+            .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+            .build();
 
         final CompositeResult<T> existingObject;
         try {

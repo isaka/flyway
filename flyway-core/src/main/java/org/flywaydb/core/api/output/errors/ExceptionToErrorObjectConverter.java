@@ -23,8 +23,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import org.flywaydb.core.extensibility.Plugin;
 
-public abstract class ExceptionToErrorObjectConverter<E extends Exception, T extends ErrorOutputItem> {
+public abstract class ExceptionToErrorObjectConverter<E extends Exception, T extends ErrorOutputItem> implements Plugin {
     public abstract Class<E> getSupportedExceptionType();
 
     public abstract T convert(E exception);
@@ -40,7 +41,7 @@ public abstract class ExceptionToErrorObjectConverter<E extends Exception, T ext
         return output.toString(StandardCharsets.UTF_8);
     }
 
-    Optional<ErrorCause> getCause(final Throwable e) {
+    protected Optional<ErrorCause> getCause(final Throwable e) {
         return Optional.ofNullable(e.getCause())
             .map(cause -> new ErrorCause(cause.getMessage(), getStackTrace(cause), getCause(cause).orElse(null)));
     }

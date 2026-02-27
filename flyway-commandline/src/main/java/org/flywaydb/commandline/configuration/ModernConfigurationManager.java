@@ -31,10 +31,10 @@ import static org.flywaydb.core.internal.configuration.models.UnknownParameterMo
 import static org.flywaydb.core.internal.util.ExceptionUtils.getFlywayExceptionMessage;
 import static org.flywaydb.core.internal.util.ExceptionUtils.getRootCause;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -383,7 +383,7 @@ public class ModernConfigurationManager implements ConfigurationManager {
                         }
                     }
                 }
-            } catch (final IllegalArgumentException e) {
+            } catch (final Exception e) {
                 if (getRootCause(e) instanceof final FlywayRedgateEditionRequiredException cause) {
                     throw cause;
                 }
@@ -401,7 +401,7 @@ public class ModernConfigurationManager implements ConfigurationManager {
         }
     }
 
-    private static String getFullFieldNameFromException(final String namespace, final IllegalArgumentException e) {
+    private static String getFullFieldNameFromException(final String namespace, final Exception e) {
         final var matcher = ANY_WORD_BETWEEN_TWO_QUOTES_PATTERN.matcher(e.getMessage());
         final var fullFieldName = new StringBuilder();
         if (!namespace.isEmpty()) {
@@ -479,7 +479,7 @@ public class ModernConfigurationManager implements ConfigurationManager {
         final ObjectMapper mapper = JsonMapper.builder().enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS).build();
 
         if (suppressError) {
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            return mapper.rebuild().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).build();
         }
 
         return mapper;

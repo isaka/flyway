@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.flywaydb.core.FlywayTelemetryManager;
+import org.flywaydb.core.api.CoreErrorCode;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.callback.CallbackEvent;
@@ -178,8 +179,14 @@ public class DefaultCallbackExecutor<E extends CallbackEvent<E>> implements Call
             callback.handle(event, context);
         } catch (final FlywayBlockStatementExecutionException e) {
             throw e;
+        } catch (final FlywayException e) {
+            throw new FlywayException("Error while executing " + event.getId() + " callback: " + e.getMessage(),
+                e,
+                e.getErrorCode());
         } catch (final Exception e) {
-            throw new FlywayException("Error while executing " + event.getId() + " callback: " + e.getMessage(), e);
+            throw new FlywayException("Error while executing " + event.getId() + " callback: " + e.getMessage(),
+                e,
+                CoreErrorCode.FAULT);
         }
     }
 }

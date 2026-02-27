@@ -209,37 +209,30 @@ Source: https://app.snyk.io/vuln/snyk:lic:maven:com.fasterxml.jackson.core:jacks
 <license-texts/Apache-2.0-0.txt>
 -------------------------------------
 -------------------------------------
-com.fasterxml.jackson.core:jackson-core 2.19.1
+tools.jackson.core:jackson-core 2.19.1
 -------------------------------------
-Source: https://app.snyk.io/vuln/snyk:lic:maven:com.fasterxml.jackson.core:jackson-core:Apache-2.0
+Source: https://app.snyk.io/vuln/snyk:lic:maven:tools.jackson.core:jackson-core:Apache-2.0
 
 <license-texts/Apache-2.0-0.txt>
 -------------------------------------
 -------------------------------------
-com.fasterxml.jackson.core:jackson-databind 2.19.1
+tools.jackson.core:jackson-databind 2.19.1
 -------------------------------------
-Source: https://app.snyk.io/vuln/snyk:lic:maven:com.fasterxml.jackson.core:jackson-databind:Apache-2.0
+Source: https://app.snyk.io/vuln/snyk:lic:maven:tools.jackson.core:jackson-databind:Apache-2.0
 
 <license-texts/Apache-2.0-0.txt>
 -------------------------------------
 -------------------------------------
-com.fasterxml.jackson.dataformat:jackson-dataformat-toml 2.19.1
+tools.jackson.dataformat:jackson-dataformat-toml 2.19.1
 -------------------------------------
-Source: https://app.snyk.io/vuln/snyk:lic:maven:com.fasterxml.jackson.dataformat:jackson-dataformat-toml:Apache-2.0
+Source: https://app.snyk.io/vuln/snyk:lic:maven:tools.jackson.dataformat:jackson-dataformat-toml:Apache-2.0
 
 <license-texts/Apache-2.0-0.txt>
 -------------------------------------
 -------------------------------------
-com.fasterxml.jackson.dataformat:jackson-dataformat-xml 2.19.1
+tools.jackson.dataformat:jackson-dataformat-xml 2.19.1
 -------------------------------------
-Source: https://app.snyk.io/vuln/snyk:lic:maven:com.fasterxml.jackson.dataformat:jackson-dataformat-xml:Apache-2.0
-
-<license-texts/Apache-2.0-0.txt>
--------------------------------------
--------------------------------------
-com.fasterxml.jackson.datatype:jackson-datatype-jsr310 2.19.1
--------------------------------------
-Source: https://app.snyk.io/vuln/snyk:lic:maven:com.fasterxml.jackson.datatype:jackson-datatype-jsr310:Apache-2.0
+Source: https://app.snyk.io/vuln/snyk:lic:maven:tools.jackson.dataformat:jackson-dataformat-xml:Apache-2.0
 
 <license-texts/Apache-2.0-0.txt>
 -------------------------------------

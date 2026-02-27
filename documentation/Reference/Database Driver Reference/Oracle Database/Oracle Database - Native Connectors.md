@@ -2,7 +2,7 @@
 subtitle: Oracle - Native Connectors
 ---
 
-- **Status:** Preview
+- **Status:** {% include preview.html %}
 - **Verified Versions:** 11.1, 21
 - **Maintainer:** {% include redgate-badge.html %}
 - **Edition:** Redgate

@@ -23,9 +23,9 @@ import static org.flywaydb.commandline.ThreadUtils.terminate;
 import static org.flywaydb.commandline.logging.LoggingUtils.getLogCreator;
 import static org.flywaydb.commandline.logging.LoggingUtils.initLogging;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

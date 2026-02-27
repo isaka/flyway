@@ -93,6 +93,7 @@ This namespace contains the configurations specific to the Flyway engine.
 | [`token`](<Configuration/Flyway Namespace/Flyway Token Setting>) | Community | String | Personal access token used for licensing Flyway.              |
 
 ## Flyway Pipelines integration settings
+{% include preview.html %}
 
 | Setting                                                                                         | Tier      | Type    | Description                                                           |
 |-------------------------------------------------------------------------------------------------|-----------|---------|-----------------------------------------------------------------------|

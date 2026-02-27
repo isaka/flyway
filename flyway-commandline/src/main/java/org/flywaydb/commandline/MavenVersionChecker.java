@@ -21,9 +21,9 @@ package org.flywaydb.commandline;
 
 import static lombok.AccessLevel.PACKAGE;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.dataformat.xml.XmlMapper;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
