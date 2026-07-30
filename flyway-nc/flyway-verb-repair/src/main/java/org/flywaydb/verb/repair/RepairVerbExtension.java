@@ -31,6 +31,7 @@ import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.output.OperationResult;
 import org.flywaydb.core.api.output.RepairOutput;
 import org.flywaydb.core.api.output.RepairResult;
+import org.flywaydb.core.internal.configuration.CoreConfigurationParameters;
 import org.flywaydb.core.internal.nc.NativeConnectorsDatabase;
 import org.flywaydb.core.internal.nc.schemahistory.SchemaHistoryItem;
 import org.flywaydb.core.extensibility.ConfigurationParameter;
@@ -58,9 +59,7 @@ public class RepairVerbExtension implements VerbExtension {
 
     @Override
     public List<ConfigurationParameter> getConfigurationParameters() {
-        return List.of(new ConfigurationParameter("ignoreMigrationPatterns",
-            "Patterns of migrations and states to ignore during repair",
-            false));
+        return CoreConfigurationParameters.getConfigurationParameters(CoreConfigurationParameters.IGNORE_MIGRATION_PATTERNS);
     }
 
     @Override

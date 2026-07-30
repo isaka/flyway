@@ -57,6 +57,12 @@ flyway.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
 FLYWAY_DRIVER=com.microsoft.sqlserver.jdbc.SQLServerDriver
 ```
 
+To configure a named environment via an environment variable when using a TOML configuration, prefix `driver` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
+```
+
 ### API
 
 ```java

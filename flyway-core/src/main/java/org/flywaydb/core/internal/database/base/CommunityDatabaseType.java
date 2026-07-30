@@ -23,9 +23,8 @@ import static org.flywaydb.core.internal.util.FlywayDbWebsiteLinks.COMMUNITY_CON
 
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.extensibility.VersionReportable;
-import org.flywaydb.core.internal.database.DatabaseType;
 
-public interface CommunityDatabaseType extends DatabaseType, VersionReportable {
+public interface CommunityDatabaseType extends VersionReportable {
 
     default String announcementForCommunitySupport() {
         return getName()

@@ -20,10 +20,12 @@
 package org.flywaydb.commandline;
 
 import java.util.Arrays;
+import java.util.List;
 import org.flywaydb.core.api.Location;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.logging.Log;
 import org.flywaydb.core.api.migration.baseline.BaselineMigrationConfigurationExtension;
+import org.flywaydb.core.internal.util.AsciiTable;
 
 public class MigrationConfigPrinter {
     public static void print(final Log log, final Configuration configuration) {
@@ -52,48 +54,16 @@ public class MigrationConfigPrinter {
         final String[] sqlSuffixes = configuration.getSqlMigrationSuffixes();
         final String sqlSuffixesValue = String.join(", ", sqlSuffixes);
 
-        final String[][] rows = { { "locations", locationsValue },
-                                  { "callbackLocations", callbackLocationsValue },
-                                  { "workingDirectory", workingDirectoryValue },
-                                  { "repeatableSqlMigrationPrefix", repeatablePrefixValue },
-                                  { "sqlMigrationPrefix", sqlPrefixValue },
-                                  { "baselineMigrationPrefix", baselinePrefixValue },
-                                  { "sqlMigrationSeparator", sqlSeparatorValue },
-                                  { "sqlMigrationSuffixes", sqlSuffixesValue } };
+        final List<String> columns = List.of("Setting", "Value");
+        final List<List<String>> rows = List.of(List.of("locations", locationsValue),
+            List.of("callbackLocations", callbackLocationsValue),
+            List.of("workingDirectory", workingDirectoryValue),
+            List.of("repeatableSqlMigrationPrefix", repeatablePrefixValue),
+            List.of("sqlMigrationPrefix", sqlPrefixValue),
+            List.of("baselineMigrationPrefix", baselinePrefixValue),
+            List.of("sqlMigrationSeparator", sqlSeparatorValue),
+            List.of("sqlMigrationSuffixes", sqlSuffixesValue));
 
-        log.info("\n" + buildTable(rows));
-    }
-
-    private static String buildTable(final String[][] rows) {
-        final int[] colWidths = { "Setting".length(), "Current value".length() };
-        for (final String[] row : rows) {
-            if (row[0].length() > colWidths[0]) {
-                colWidths[0] = row[0].length();
-            }
-            if (row[1].length() > colWidths[1]) {
-                colWidths[1] = row[1].length();
-            }
-        }
-        colWidths[0] += 2;
-        colWidths[1] += 2;
-
-        final StringBuilder table = new StringBuilder();
-        table.append(String.format("| %s | %s |\n", pad("Setting", colWidths[0]), pad("Value", colWidths[1])));
-        table.append(String.format("|%s|%s|\n", makeLine(colWidths[0] + 2), makeLine(colWidths[1] + 2)));
-        for (final String[] row : rows) {
-            table.append(String.format("| %s | %s |\n", pad(row[0], colWidths[0]), pad(row[1], colWidths[1])));
-        }
-        return table.toString();
-    }
-
-    private static String pad(final String s, final int len) {
-        if (s.length() >= len) {
-            return s;
-        }
-        return String.format("%-" + len + "s", s);
-    }
-
-    private static String makeLine(final int count) {
-        return "-".repeat(Math.max(0, count));
+        log.info("\n" + new AsciiTable(columns, rows, true, "", "No settings found").render());
     }
 }

@@ -44,6 +44,10 @@ public enum NoopCallbackExecutor implements CallbackExecutor<Event> {
     }
 
     @Override
+    public void onMigrationConnectionEvent(final Event event) {
+    }
+
+    @Override
     public void setMigrationInfo(final MigrationInfo migrationInfo) {
     }
 

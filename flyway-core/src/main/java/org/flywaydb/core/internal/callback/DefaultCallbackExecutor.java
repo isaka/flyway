@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import lombok.CustomLog;
 import org.flywaydb.core.FlywayTelemetryManager;
 import org.flywaydb.core.api.CoreErrorCode;
 import org.flywaydb.core.api.FlywayException;
@@ -46,7 +47,10 @@ import org.flywaydb.core.internal.jdbc.ExecutionTemplateFactory;
 /**
  * Executes the callbacks for a specific event.
  */
+@CustomLog
 public class DefaultCallbackExecutor<E extends CallbackEvent<E>> implements CallbackExecutor<E> {
+
+    private static final String CUSTOM_CALLBACK_CLASS = "(custom callback class)";
 
     private final Configuration configuration;
     private final Database database;
@@ -90,6 +94,14 @@ public class DefaultCallbackExecutor<E extends CallbackEvent<E>> implements Call
             execute(event, database.getEventConnection());
             database.disposeEventConnection();
         }
+    }
+
+    @Override
+    public void onMigrationConnectionEvent(final E event) {
+        if (database.useSingleConnection()) {
+            return;
+        }
+        execute(event, database.getMigrationConnection());
     }
 
     @Override
@@ -174,7 +186,14 @@ public class DefaultCallbackExecutor<E extends CallbackEvent<E>> implements Call
     private void handleEvent(final GenericCallback<? super E> callback, final E event, final Context context) {
         final String callbackType = Optional.ofNullable(callback.getClass().getCanonicalName())
             .map(x -> x.startsWith("org.flywaydb"))
-            .orElse(false) ? callback.getClass().getSimpleName() : "(custom callback class)";
+            .orElse(false) ? callback.getClass().getSimpleName() : CUSTOM_CALLBACK_CLASS;
+
+        if (CUSTOM_CALLBACK_CLASS.equals(callbackType)) {
+            LOG.info("Executing Java callback: " + event.getId() + (callback.getCallbackName() == null
+                ? ""
+                : " - " + callback.getCallbackName()));
+        }
+
         try (final EventTelemetryModel ignored = new CallbackTelemetryModel(event.getId(),
             callbackType,
             flywayTelemetryManager)) {

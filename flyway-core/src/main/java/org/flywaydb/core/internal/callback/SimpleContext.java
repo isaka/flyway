@@ -19,9 +19,10 @@
  */
 package org.flywaydb.core.internal.callback;
 
+import java.util.List;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Error;
@@ -31,8 +32,7 @@ import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.output.OperationResult;
 import org.flywaydb.core.internal.database.base.Connection;
 import org.flywaydb.core.internal.database.base.Database;
-
-import java.util.List;
+import org.flywaydb.core.internal.reports.ReportDetails;
 
 @Getter(onMethod = @__(@Override))
 public class SimpleContext implements Context {
@@ -44,6 +44,17 @@ public class SimpleContext implements Context {
     private final OperationResult operationResult;
     @Getter
     private final Database database;
+    private ReportDetails reportDetails;
+
+    public SimpleContext(final Configuration configuration, final ReportDetails reportDetails) {
+        this.configuration = configuration;
+        this.connection = null;
+        this.migrationInfo = null;
+        this.statement = null;
+        this.operationResult = null;
+        this.database = null;
+        this.reportDetails = reportDetails;
+    }
 
     public SimpleContext(final Configuration configuration) {
         this.configuration = configuration;

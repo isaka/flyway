@@ -49,6 +49,15 @@ public interface CallbackExecutor<E extends CallbackEvent<E>> {
     void onMigrateOrUndoEvent(E event);
 
     /**
+     * Executes the callbacks for this event on the migration connection, within a separate transaction per callback if
+     * possible. This is a no-op if the migration connection is the same connection as the main connection, since
+     * {@link #onEvent} will already have run against it.
+     *
+     * @param event The event to handle.
+     */
+    void onMigrationConnectionEvent(E event);
+
+    /**
      * Sets the current migration info.
      *
      * @param migrationInfo The current migration.

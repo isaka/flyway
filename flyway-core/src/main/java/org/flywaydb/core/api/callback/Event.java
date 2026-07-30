@@ -19,8 +19,8 @@
  */
 package org.flywaydb.core.api.callback;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * The Flyway lifecycle events that can be handled in callbacks.
@@ -234,23 +234,27 @@ public enum Event implements CallbackEvent<Event> {
     /**
      * Fired after a clean operation has finished.
      */
-    AFTER_CLEAN_OPERATION_FINISH("afterInfoOperationFinish"),
+    AFTER_CLEAN_OPERATION_FINISH("afterCleanOperationFinish"),
     /**
      * Fired after a validate operation has finished.
      */
-    AFTER_VALIDATE_OPERATION_FINISH("afterInfoOperationFinish"),
+    AFTER_VALIDATE_OPERATION_FINISH("afterValidateOperationFinish"),
     /**
-     * Fired after a validate operation has finished.
+     * Fired after an undo operation has finished.
      */
-    AFTER_UNDO_OPERATION_FINISH("afterInfoOperationFinish"),
+    AFTER_UNDO_OPERATION_FINISH("afterUndoOperationFinish"),
     /**
-     * Fired after a validate operation has finished.
+     * Fired after a repair operation has finished.
      */
-    AFTER_REPAIR_OPERATION_FINISH("afterInfoOperationFinish"),
+    AFTER_REPAIR_OPERATION_FINISH("afterRepairOperationFinish"),
     /**
-     * Fired after a validate operation has finished.
+     * Fired after a baseline operation has finished.
      */
-    AFTER_BASELINE_OPERATION_FINISH("afterInfoOperationFinish"),
+    AFTER_BASELINE_OPERATION_FINISH("afterBaselineOperationFinish"),
+    /**
+     * Fired after a report has been generated.
+     */
+    AFTER_REPORT_GENERATED("afterReportGenerated"),
     /**
      * Deprecated. Fired before any non-existent schemas are created.
      */

@@ -131,7 +131,7 @@
       <!-- Workaround for https://issues.apache.org/jira/browse/MASSEMBLY-864 -->
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <includes>
-        <include>org.fusesource.jansi:jansi</include>
+        <include>org.jline:jansi</include>
       </includes>
     </dependencySet>
     <dependencySet>
@@ -299,7 +299,7 @@
         <exclude>com.amazonaws.secretsmanager:aws-secretsmanager-jdbc</exclude>
         <exclude>org.flywaydb:flyway-*</exclude>
         <exclude>org.flywaydb:flyway-*</exclude>
-        <exclude>org.fusesource.jansi:jansi</exclude>
+        <exclude>org.jline:jansi</exclude>
         <exclude>software.amazon.awssdk:s3</exclude>
         <exclude>org.slf4j:slf4j-nop</exclude>
         <exclude>org.apache.commons:commons-text</exclude>

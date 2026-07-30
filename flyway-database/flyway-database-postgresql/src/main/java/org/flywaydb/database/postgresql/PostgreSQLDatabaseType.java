@@ -53,7 +53,7 @@ public class PostgreSQLDatabaseType extends BaseDatabaseType {
 
     @Override
     public List<String> getSupportedEngines() {
-        return List.of(getName(), "AuroraPostgreSql", "YugabyteDb", "TimescaleDb");
+        return List.of(getName(), "AuroraPostgreSql", "YugabyteDb", "TimescaleDb", "DatabricksLakebase");
     }
 
     @Override

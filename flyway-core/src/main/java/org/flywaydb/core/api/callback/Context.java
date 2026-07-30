@@ -19,11 +19,11 @@
  */
 package org.flywaydb.core.api.callback;
 
+import java.sql.Connection;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.output.OperationResult;
-
-import java.sql.Connection;
+import org.flywaydb.core.internal.reports.ReportDetails;
 
 /**
  * The context relevant to an event.
@@ -36,8 +36,8 @@ public interface Context {
 
     /**
      * @return The JDBC connection being used. Transaction are managed by Flyway. When the context is passed to the
-     * {@link Callback#handle(Event, Context)} method, a transaction will already have been started if required and will
-     * be automatically committed or rolled back afterwards.
+     * {@link Callback#handle(CallbackEvent, Context)} method, a transaction will already have been started if required
+     * and will be automatically committed or rolled back afterward.
      */
     Connection getConnection();
 
@@ -58,4 +58,11 @@ public interface Context {
      * events.
      */
     OperationResult getOperationResult();
+
+    /**
+     * @return The report generated. Only relevant for the AFTER_REPORT_GENERATED event. Default: {@code null}
+     */
+    default ReportDetails getReportDetails() {
+        return null;
+    }
 }

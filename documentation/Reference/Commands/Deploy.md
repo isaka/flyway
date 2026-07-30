@@ -63,7 +63,8 @@ Universal commandline parameters are listed [here](<Command-line Parameters>).
 {
   "scriptExecuted": "C:\\workingDirectory\\D__deployment.sql",
   "deploymentResults": [],
-  "database": "production"
+  "database": "production",
+  "executionTime": 123
 }
 ```
 

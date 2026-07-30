@@ -23,6 +23,7 @@ import tools.jackson.core.JacksonException.Reference;
 import tools.jackson.core.JsonToken;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JavaType;
+import tools.jackson.databind.MapperFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.exc.MismatchedInputException;
 import tools.jackson.databind.module.SimpleModule;
@@ -40,6 +41,8 @@ import org.flywaydb.core.internal.util.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -50,19 +53,63 @@ import java.util.stream.Collectors;
 public class TomlUtils {
 
     private static final String MSG = "Using both new Environment variable %1$s and old Environment variable %2$s. Please remove %2$s.";
+    private static final String ENVIRONMENTS_PREFIX = "environments_";
+
+    private static boolean hasEnvironmentsPrefix(final String key) {
+        return key.toLowerCase(Locale.ENGLISH).startsWith(ENVIRONMENTS_PREFIX);
+    }
+
+    // The environments_<name>_<setting> prefix is case-insensitive, but "environments" is a case-sensitive
+    // Map<String, EnvironmentModel> key, so a shouted name must be resolved against the environments already
+    // known from TOML rather than blindly lowercased, or it would silently create a second environment.
+    private static String resolveEnvironmentsCasing(final String key, final Collection<String> knownEnvironmentNames) {
+        final String lowered = key.toLowerCase(Locale.ENGLISH);
+        final String remainder = lowered.substring(ENVIRONMENTS_PREFIX.length());
+        final int nextUnderscore = remainder.indexOf('_');
+        final String candidateName = nextUnderscore == -1 ? remainder : remainder.substring(0, nextUnderscore);
+
+        final List<String> matches = knownEnvironmentNames.stream()
+            .filter(name -> name.equalsIgnoreCase(candidateName))
+            .distinct()
+            .collect(Collectors.toList());
+
+        if (matches.size() > 1) {
+            throw new FlywayException("Environment variable '"
+                + key
+                + "' matches multiple environments that differ only by case: "
+                + String.join(", ", matches)
+                + ". Rename one of them, or set this value using its exact casing.");
+        }
+
+        if (matches.size() == 1 && !matches.get(0).equals(candidateName)) {
+            return ENVIRONMENTS_PREFIX + matches.get(0) + remainder.substring(candidateName.length());
+        }
+        return lowered;
+    }
 
     public static ConfigurationModel loadConfigurationFromEnvironment() {
+        return loadConfigurationFromEnvironment(Collections.emptySet());
+    }
+
+    public static ConfigurationModel loadConfigurationFromEnvironment(final Collection<String> knownEnvironmentNames) {
         final Map<String, String> environmentVariables = System.getenv()
             .entrySet()
             .stream()
             .filter(e -> !e.getKey().equals("FLYWAY_CONFIG_FILES"))
-            .filter(e -> e.getKey().startsWith("flyway_") || e.getKey().startsWith("environments_") || (e.getKey()
+            .filter(e -> e.getKey().startsWith("flyway_") || hasEnvironmentsPrefix(e.getKey()) || (e.getKey()
                 .startsWith("FLYWAY_") && ConfigUtils.convertKey(e.getKey()) != null))
             .collect(Collectors.toMap(k -> {
-                final String prop = k.getKey().startsWith("FLYWAY_") || k.getKey()
+                final String prop;
+                if (k.getKey().startsWith("FLYWAY_") || k.getKey()
                     .toUpperCase(Locale.ENGLISH)
-                    .startsWith("FLYWAY_JDBC_PROPERTIES_") ? ConfigUtils.convertKey(k.getKey()
-                    .toUpperCase(Locale.ENGLISH)) : k.getKey().replace("_", ".");
+                    .startsWith("FLYWAY_JDBC_PROPERTIES_")) {
+                    prop = ConfigUtils.convertKey(k.getKey().toUpperCase(Locale.ENGLISH));
+                } else {
+                    final String key = hasEnvironmentsPrefix(k.getKey()) && !k.getKey().startsWith(ENVIRONMENTS_PREFIX)
+                        ? resolveEnvironmentsCasing(k.getKey(), knownEnvironmentNames)
+                        : k.getKey();
+                    prop = key.replace("_", ".");
+                }
                 if (prop != null && prop.startsWith("flyway.")) {
                     final String p = prop.substring("flyway.".length());
                     if (Arrays.stream((EnvironmentModel.class).getDeclaredFields())
@@ -101,6 +148,7 @@ public class TomlUtils {
         try {
             return objectMapper.rebuild()
                 .addModule(simpleModule)
+                .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
                 .build()
                 .convertValue(properties, ConfigurationModel.class);
         } catch (IllegalArgumentException e) {

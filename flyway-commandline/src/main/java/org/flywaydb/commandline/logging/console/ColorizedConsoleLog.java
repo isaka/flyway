@@ -22,9 +22,9 @@ package org.flywaydb.commandline.logging.console;
 import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.api.logging.Log;
 import org.flywaydb.core.api.logging.LogFactory;
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.Ansi.Color;
-import org.fusesource.jansi.AnsiConsole;
+import org.jline.jansi.Ansi;
+import org.jline.jansi.Ansi.Color;
+import org.jline.jansi.AnsiConsole;
 
 import java.io.PrintStream;
 

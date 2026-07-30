@@ -34,6 +34,7 @@ import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.output.OperationResult;
 import org.flywaydb.core.api.output.ValidateOutput;
 import org.flywaydb.core.api.output.ValidateResult;
+import org.flywaydb.core.internal.configuration.CoreConfigurationParameters;
 import org.flywaydb.core.internal.nc.NativeConnectorsDatabase;
 import org.flywaydb.core.extensibility.CachingVerbExtension;
 import org.flywaydb.core.extensibility.ConfigurationParameter;
@@ -62,15 +63,9 @@ public class ValidateVerbExtension extends CachingVerbExtension {
 
     @Override
     public List<ConfigurationParameter> getConfigurationParameters() {
-        return List.of(new ConfigurationParameter("ignoreMigrationPatterns",
-                "Patterns of migrations and states to ignore during validate",
-                false),
-            new ConfigurationParameter("validateMigrationNaming",
-                "Validate file names of SQL migrations (including callbacks)",
-                false),
-            new ConfigurationParameter("cherryPick",
-                "[teams] Comma separated list of migrations that Flyway should consider when validating",
-                false));
+        return CoreConfigurationParameters.getConfigurationParameters(CoreConfigurationParameters.IGNORE_MIGRATION_PATTERNS,
+            CoreConfigurationParameters.VALIDATE_MIGRATION_NAMING,
+            CoreConfigurationParameters.CHERRY_PICK);
     }
 
     @Override

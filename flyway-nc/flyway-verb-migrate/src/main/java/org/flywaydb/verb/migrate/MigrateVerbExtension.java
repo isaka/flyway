@@ -40,6 +40,7 @@ import org.flywaydb.core.api.output.OperationResult;
 import org.flywaydb.core.api.output.ValidateResult;
 import org.flywaydb.core.api.pattern.ValidatePattern;
 import org.flywaydb.core.internal.Topic;
+import org.flywaydb.core.internal.configuration.CoreConfigurationParameters;
 import org.flywaydb.core.internal.nc.NativeConnectorsDatabase;
 import org.flywaydb.core.extensibility.ConfigurationParameter;
 import org.flywaydb.core.extensibility.VerbExtension;
@@ -74,30 +75,16 @@ public class MigrateVerbExtension implements VerbExtension {
 
     @Override
     public List<ConfigurationParameter> getConfigurationParameters() {
-        return List.of(new ConfigurationParameter("target",
-                "Target version up to which Flyway should use migrations",
-                false),
-            new ConfigurationParameter("outOfOrder", "Allows migrations to be run \"out of order\"", false),
-            new ConfigurationParameter("baselineOnMigrate",
-                "Baseline on migrate against uninitialized non-empty schema",
-                false),
-            new ConfigurationParameter("validateOnMigrate", "Validate when running migrate", false),
-            new ConfigurationParameter("cherryPick",
-                "[teams] Comma separated list of migrations that Flyway should consider when migrating",
-                false),
-            new ConfigurationParameter("group",
-                "Whether to group all pending migrations together in the same transaction when applying them",
-                false),
-            new ConfigurationParameter("skipExecutingMigrations",
-                "Whether Flyway should skip actually executing the contents of the migrations",
-                false),
-            new ConfigurationParameter("createSchemas",
-                "Whether Flyway should attempt to create the schemas specified in the schemas property",
-                false),
-            new ConfigurationParameter("executeInTransaction",
-                "Whether SQL should execute within a transaction",
-                false),
-            new ConfigurationParameter("mixed", "Allow mixing transactional and non-transactional statements", false));
+        return CoreConfigurationParameters.getConfigurationParameters(CoreConfigurationParameters.TARGET,
+            CoreConfigurationParameters.OUT_OF_ORDER,
+            CoreConfigurationParameters.BASELINE_ON_MIGRATE,
+            CoreConfigurationParameters.VALIDATE_ON_MIGRATE,
+            CoreConfigurationParameters.CHERRY_PICK,
+            CoreConfigurationParameters.GROUP,
+            CoreConfigurationParameters.SKIP_EXECUTING_MIGRATIONS,
+            CoreConfigurationParameters.CREATE_SCHEMAS,
+            CoreConfigurationParameters.EXECUTE_IN_TRANSACTION,
+            CoreConfigurationParameters.MIXED);
     }
 
     @Override

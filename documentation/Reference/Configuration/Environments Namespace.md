@@ -62,6 +62,24 @@ Note: You define an environment using the
 `environments` (plural) namespace but you specify which environment to use with the
 `environment` (singular) parameter.
 
+## Environment Variables
+
+Any [environment setting](<Configuration/Environments Namespace>) can be set for a specific named environment using an OS environment variable of the form `environments_{environment name}_{setting}`:
+
+```properties
+environments_example_url=jdbc:sqlite:local_database.db
+environments_example_password=mysecretpassword
+```
+
+Settings in a nested namespace (such as [`flyway`](<Configuration/Environments Namespace/Environment Flyway Namespace>) or [`jdbcProperties`](<Configuration/Environments Namespace/Environment JDBC Properties Namespace>)) are addressed the same way, with an extra `_` per level:
+
+```properties
+environments_example_flyway_locations=filesystem:./sql1,filesystem:./sql2
+environments_example_jdbcProperties_accessToken=mytoken
+```
+
+The `environments_` prefix is case-insensitive, so `ENVIRONMENTS_EXAMPLE_PASSWORD` is an equally valid way of setting the same value. This only extends to the prefix itself and to setting names backed by a Java field (which are matched case-insensitively). It does not extend to nested key-value settings such as [`jdbcProperties`](<Configuration/Environments Namespace/Environment JDBC Properties Namespace>), whose keys are passed through to the JDBC driver verbatim and may be case-sensitive: `ENVIRONMENTS_EXAMPLE_JDBCPROPERTIES_ACCESSTOKEN` would be sent to the driver as `accesstoken`, not `accessToken`, so nested settings still need their exact casing.
+
 ## Legacy configuration
 
 Properties that were originally part of the regular flyway configuration (`-url`, `-user`,

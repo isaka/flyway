@@ -59,6 +59,12 @@ flyway.initSql=ALTER SESSION SET NLS_LANGUAGE='ENGLISH';
 FLYWAY_INIT_SQL=ALTER SESSION SET NLS_LANGUAGE='ENGLISH';
 ```
 
+To configure a named environment via an environment variable when using a TOML configuration, prefix `initSql` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_initSql=ALTER SESSION SET NLS_LANGUAGE='ENGLISH';
+```
+
 ### API
 
 ```java

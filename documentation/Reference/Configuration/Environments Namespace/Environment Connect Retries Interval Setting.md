@@ -53,6 +53,12 @@ flyway.connectRetriesInterval=60
 FLYWAY_CONNECT_RETRIES_INTERVAL=60
 ```
 
+To configure a named environment via an environment variable when using a TOML configuration, prefix `connectRetriesInterval` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_connectRetriesInterval=60
+```
+
 ### API
 
 ```java

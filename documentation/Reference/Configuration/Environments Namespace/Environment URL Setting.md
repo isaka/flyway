@@ -56,6 +56,12 @@ flyway.url=jdbc:h2:mem:flyway_db
 FLYWAY_URL=jdbc:h2:mem:flyway_db
 ```
 
+To configure a named environment via an environment variable when using a TOML configuration, prefix `url` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_url=jdbc:h2:mem:flyway_db
+```
+
 ### API
 
 When using the Java API, you configure your JDBC URL, User and Password via a datasource.

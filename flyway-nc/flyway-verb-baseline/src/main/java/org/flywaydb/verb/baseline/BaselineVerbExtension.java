@@ -29,6 +29,7 @@ import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.output.BaselineResult;
 import org.flywaydb.core.internal.Topic;
 import org.flywaydb.core.api.output.OperationResult;
+import org.flywaydb.core.internal.configuration.CoreConfigurationParameters;
 import org.flywaydb.core.internal.nc.NativeConnectorsDatabase;
 import org.flywaydb.core.internal.nc.schemahistory.SchemaHistoryItem;
 import org.flywaydb.core.extensibility.CachingVerbExtension;
@@ -55,15 +56,9 @@ public class BaselineVerbExtension extends CachingVerbExtension {
 
     @Override
     public List<ConfigurationParameter> getConfigurationParameters() {
-        return List.of(new ConfigurationParameter("baselineVersion",
-                "Version to tag schema with when executing baseline",
-                false),
-            new ConfigurationParameter("baselineDescription",
-                "Description to tag schema with when executing baseline",
-                false),
-            new ConfigurationParameter("createSchemas",
-                "Whether Flyway should attempt to create the schemas specified in the schemas property",
-                false));
+        return CoreConfigurationParameters.getConfigurationParameters(CoreConfigurationParameters.BASELINE_VERSION,
+                CoreConfigurationParameters.BASELINE_DESCRIPTION,
+                CoreConfigurationParameters.CREATE_SCHEMAS);
     }
 
     @Override

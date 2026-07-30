@@ -217,7 +217,10 @@ public class InsertRowLock {
             LOG.debug("Updating lock in Flyway schema history table");
             jdbcTemplate.executeStatement(updateLockStatement);
         };
-        return executor.scheduleAtFixedRate(lockUpdatingTask, 0, LOCK_TIMEOUT_MINS / 2, TimeUnit.MINUTES);
+        return executor.scheduleAtFixedRate(lockUpdatingTask,
+            LOCK_TIMEOUT_MINS / 2,
+            LOCK_TIMEOUT_MINS / 2,
+            TimeUnit.MINUTES);
     }
 
     private void stopLockWatchingThread() {

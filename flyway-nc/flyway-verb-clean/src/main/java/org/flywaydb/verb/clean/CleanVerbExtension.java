@@ -23,12 +23,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 import org.flywaydb.core.api.CoreMigrationType;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.output.CleanResult;
 import org.flywaydb.core.api.output.OperationResult;
+import org.flywaydb.core.internal.configuration.CoreConfigurationParameters;
 import org.flywaydb.core.internal.nc.NativeConnectorsDatabase;
 import org.flywaydb.core.internal.nc.schemahistory.SchemaHistoryItem;
 import org.flywaydb.core.extensibility.ConfigurationParameter;
@@ -52,7 +54,9 @@ public class CleanVerbExtension implements VerbExtension {
 
     @Override
     public List<ConfigurationParameter> getConfigurationParameters() {
-        return List.of(new ConfigurationParameter("cleanDisabled", "Whether to disable clean", false));
+        return Stream.of(CoreConfigurationParameters.CLEAN_DISABLED)
+            .map(CoreConfigurationParameters::getConfigurationParameter)
+            .toList();
     }
 
     @Override

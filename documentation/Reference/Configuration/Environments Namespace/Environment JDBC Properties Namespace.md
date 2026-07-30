@@ -54,6 +54,12 @@ flyway.jdbcProperties.accessToken=my-access-token
 FLYWAY_JDBC_PROPERTIES_accessToken=access-token
 ```
 
+To configure this for a named environment via an environment variable when using a TOML configuration, prefix `jdbcProperties.accessToken` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_jdbcProperties_accessToken=access-token
+```
+
 ### API
 
 ```java

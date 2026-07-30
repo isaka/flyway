@@ -84,6 +84,7 @@ public class DbMigrate {
         this.configuration = configuration;
         this.callbackExecutor = callbackExecutor;
         this.progress = configuration.createProgress("migrate");
+        callbackExecutor.onMigrationConnectionEvent(Event.AFTER_CONNECT);
     }
 
     /**

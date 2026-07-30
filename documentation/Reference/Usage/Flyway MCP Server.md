@@ -2,9 +2,8 @@
 subtitle: Flyway MCP Server
 ---
 
-## What it is
-
 {% include enterprise.html %}
+## What it is
 
 The Flyway MCP (Model Context Protocol) server lets AI coding agents and assistants work with a Flyway project directly.
 It exposes a set of tools an agent can call to follow the same development workflow you'd normally drive by hand through

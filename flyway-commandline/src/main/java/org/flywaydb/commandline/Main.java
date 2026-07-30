@@ -23,11 +23,6 @@ import static org.flywaydb.commandline.ThreadUtils.terminate;
 import static org.flywaydb.commandline.logging.LoggingUtils.getLogCreator;
 import static org.flywaydb.commandline.logging.LoggingUtils.initLogging;
 
-import org.flywaydb.core.extensibility.ConfigurationParameter;
-import org.flywaydb.core.internal.configuration.HelpText;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.json.JsonMapper;
-import tools.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -41,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.SneakyThrows;
+import org.flywaydb.commandline.callback.CommandlineCallbackExecutor;
 import org.flywaydb.commandline.configuration.CommandLineArguments;
 import org.flywaydb.commandline.configuration.ConfigurationManagerImpl;
 import org.flywaydb.commandline.logging.console.ConsoleLog.Level;
@@ -51,6 +47,7 @@ import org.flywaydb.core.api.MigrationFilter;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationInfoService;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.configuration.ClassicConfiguration;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
@@ -62,9 +59,12 @@ import org.flywaydb.core.api.output.HtmlResult;
 import org.flywaydb.core.api.output.InfoResult;
 import org.flywaydb.core.api.output.OperationResult;
 import org.flywaydb.core.extensibility.CommandExtension;
+import org.flywaydb.core.extensibility.ConfigurationParameter;
 import org.flywaydb.core.extensibility.EventTelemetryModel;
 import org.flywaydb.core.extensibility.InfoTelemetryModel;
 import org.flywaydb.core.extensibility.LicenseGuard;
+import org.flywaydb.core.internal.configuration.CoreConfigurationParameters;
+import org.flywaydb.core.internal.configuration.HelpText;
 import org.flywaydb.core.internal.exception.FlywayMigrateException;
 import org.flywaydb.core.internal.info.MigrationFilterImpl;
 import org.flywaydb.core.internal.info.MigrationInfoDumper;
@@ -73,8 +73,6 @@ import org.flywaydb.core.internal.license.FlywayLicensingException;
 import org.flywaydb.core.internal.logging.EvolvingLog;
 import org.flywaydb.core.internal.logging.buffered.BufferedLog;
 import org.flywaydb.core.internal.plugin.PluginRegister;
-import org.flywaydb.core.internal.publishing.OperationResultPublisher;
-import org.flywaydb.core.internal.publishing.PublishingConfigurationExtension;
 import org.flywaydb.core.internal.reports.ReportDetails;
 import org.flywaydb.core.internal.reports.ReportGenerationOutput;
 import org.flywaydb.core.internal.reports.ReportGenerationOutputMerger;
@@ -85,6 +83,9 @@ import org.flywaydb.core.internal.util.JsonUtils;
 import org.flywaydb.core.internal.util.Pair;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.flywaydb.core.internal.util.TelemetryUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class Main {
     private static Log LOG;
@@ -107,8 +108,8 @@ public class Main {
 
             try {
                 ReportGenerationOutput reportGenerationOutput = new ReportGenerationOutput();
-
                 final Configuration configuration;
+
                 try (final var ignored = new EventTelemetryModel("parse-args", flywayTelemetryManager)) {
                     commandLineArguments.validate();
                     LogFactory.setLogLevel(commandLineArguments.getLogLevel().toLogLevel());
@@ -142,6 +143,7 @@ public class Main {
                     isSingleCommandExtension);
 
                 if (!isSingleCommandExtension) {
+                    final var callbackExecutor = new CommandlineCallbackExecutor<>(configuration, Event.class);
                     final List<ResultReportGenerator> reportGenerators = PLUGIN_REGISTER.getInstancesOf(
                         ResultReportGenerator.class);
                     for (final ResultReportGenerator resultReportGenerator : reportGenerators) {
@@ -150,12 +152,8 @@ public class Main {
                         reportGenerationOutput = ReportGenerationOutputMerger.merge(reportGenerationOutput, output);
                     }
 
-                    if (configuration.getPluginRegister()
-                        .getExact(PublishingConfigurationExtension.class)
-                        .isPublishResult()) {
-                        publishOperationResult(configuration, result);
-                        publishReport(configuration, reportGenerationOutput.reportDetails);
-                    }
+                    callbackExecutor.onReportGeneratedEvent(Event.AFTER_REPORT_GENERATED,
+                        reportGenerationOutput.reportDetails);
 
                     if (reportGenerationOutput.aggregateException != null) {
                         throw reportGenerationOutput.aggregateException;
@@ -397,28 +395,6 @@ public class Main {
         return result;
     }
 
-    private static void publishOperationResult(final Configuration configuration, final OperationResult result) {
-        if (result == null) {
-            LOG.debug("Unable to publish null operation result");
-            return;
-        }
-
-        final List<OperationResultPublisher> publishers = configuration.getPluginRegister()
-            .getInstancesOf(OperationResultPublisher.class);
-        for (final OperationResultPublisher publisher : publishers) {
-            publisher.publish(configuration, result);
-        }
-    }
-
-    private static void publishReport(final Configuration configuration, final ReportDetails reportDetails) {
-        final List<OperationResultPublisher> publishers = configuration.getPluginRegister()
-            .getInstancesOf(OperationResultPublisher.class);
-
-        for (final OperationResultPublisher publisher : publishers) {
-            publisher.publishReport(configuration, reportDetails);
-        }
-    }
-
     private static MigrationFilterImpl getInfoFilter(final CommandLineArguments commandLineArguments) {
         return new MigrationFilterImpl(commandLineArguments.getInfoSinceDate(),
             commandLineArguments.getInfoUntilDate(),
@@ -491,124 +467,11 @@ public class Main {
 
         help.setCommands(commands);
 
-        final List<ConfigurationParameter> parameters = new ArrayList<>(List.of(new ConfigurationParameter("driver",
-                "Fully qualified classname of the JDBC driver",
-                false),
-            new ConfigurationParameter("url", "Jdbc url to use to connect to the database", false),
-            new ConfigurationParameter("user", "User to use to connect to the database", false),
-            new ConfigurationParameter("password", "Password to use to connect to the database", false)));
+        final List<ConfigurationParameter> parameters = new ArrayList<>();
         if (fullVersion) {
-            parameters.addAll(List.of(new ConfigurationParameter("connectRetries",
-                    "Maximum number of retries when attempting to connect to the database",
-                    false),
-                new ConfigurationParameter("initSql",
-                    "SQL statements to run to initialize a new database connection",
-                    false),
-                new ConfigurationParameter("schemas", "Comma-separated list of the schemas managed by Flyway", false),
-                new ConfigurationParameter("table", "Name of Flyway's schema history table", false),
-                new ConfigurationParameter("locations",
-                    "Classpath locations to scan recursively for migrations",
-                    false),
-                new ConfigurationParameter("failOnMissingLocations",
-                    "Whether to fail if a location specified in the flyway.locations option doesn't exist",
-                    false),
-                new ConfigurationParameter("resolvers", "Comma-separated list of custom MigrationResolvers", false),
-                new ConfigurationParameter("skipDefaultResolvers",
-                    "Skips default resolvers (jdbc, sql and Spring-jdbc)",
-                    false),
-                new ConfigurationParameter("sqlMigrationPrefix",
-                    "File name prefix for versioned SQL migrations",
-                    false),
-                new ConfigurationParameter("undoSqlMigrationPrefix",
-                    "[teams] File name prefix for undo SQL migrations",
-                    false),
-                new ConfigurationParameter("repeatableSqlMigrationPrefix",
-                    "File name prefix for repeatable SQL migrations",
-                    false),
-                new ConfigurationParameter("sqlMigrationSeparator", "File name separator for SQL migrations", false),
-                new ConfigurationParameter("sqlMigrationSuffixes",
-                    "Comma-separated list of file name suffixes for SQL migrations",
-                    false),
-                new ConfigurationParameter("stream", "[teams] Stream SQL migrations when executing them", false),
-                new ConfigurationParameter("batch", "[teams] Batch SQL statements when executing them", false),
-                new ConfigurationParameter("mixed",
-                    "Allow mixing transactional and non-transactional statements",
-                    false),
-                new ConfigurationParameter("encoding", "Encoding of SQL migrations", false),
-                new ConfigurationParameter("detectEncoding",
-                    "[teams] Whether Flyway should try to automatically detect SQL migration file encoding",
-                    false),
-                new ConfigurationParameter("executeInTransaction",
-                    "Whether SQL should execute within a transaction",
-                    false),
-                new ConfigurationParameter("placeholderReplacement", "Whether placeholders should be replaced", false),
-                new ConfigurationParameter("placeholders", "Placeholders to replace in sql migrations", false),
-                new ConfigurationParameter("placeholderPrefix", "Prefix of every placeholder", false),
-                new ConfigurationParameter("placeholderSuffix", "Suffix of every placeholder", false),
-                new ConfigurationParameter("scriptPlaceholderPrefix", "Prefix of every script placeholder", false),
-                new ConfigurationParameter("scriptPlaceholderSuffix", "Suffix of every script placeholder", false),
-                new ConfigurationParameter("lockRetryCount",
-                    "The maximum number of retries when trying to obtain a lock",
-                    false),
-                new ConfigurationParameter("jdbcProperties", "Properties to pass to the JDBC driver object", false),
-                new ConfigurationParameter("installedBy",
-                    "Username that will be recorded in the schema history table",
-                    false),
-                new ConfigurationParameter("target", "Target version up to which Flyway should use migrations", false),
-                new ConfigurationParameter("cherryPick",
-                    "[teams] Comma separated list of migrations that Flyway should consider when migrating",
-                    false),
-                new ConfigurationParameter("skipExecutingMigrations",
-                    "Whether Flyway should skip actually executing the contents of the migrations",
-                    false),
-                new ConfigurationParameter("outOfOrder", "Allows migrations to be run \"out of order\"", false),
-                new ConfigurationParameter("callbacks",
-                    "Comma-separated list of FlywayCallback classes, or locations to scan for FlywayCallback classes",
-                    false),
-                new ConfigurationParameter("skipDefaultCallbacks", "Skips default callbacks (sql)", false),
-                new ConfigurationParameter("validateOnMigrate", "Validate when running migrate", false),
-                new ConfigurationParameter("validateMigrationNaming",
-                    "Validate file names of SQL migrations (including callbacks)",
-                    false),
-                new ConfigurationParameter("ignoreMigrationPatterns",
-                    "Patterns of migrations and states to ignore during validate",
-                    false),
-                new ConfigurationParameter("cleanDisabled", "Whether to disable clean", false),
-                new ConfigurationParameter("baselineVersion",
-                    "Version to tag schema with when executing baseline",
-                    false),
-                new ConfigurationParameter("baselineDescription",
-                    "Description to tag schema with when executing baseline",
-                    false),
-                new ConfigurationParameter("baselineOnMigrate",
-                    "Baseline on migrate against uninitialized non-empty schema",
-                    false),
-                new ConfigurationParameter("configFiles", "Comma-separated list of config files to use", false),
-                new ConfigurationParameter("configFileEncoding",
-                    "Encoding to use when loading the config files",
-                    false),
-                new ConfigurationParameter("jarDirs",
-                    "Comma-separated list of dirs for Jdbc drivers & Java migrations",
-                    false),
-                new ConfigurationParameter("createSchemas",
-                    "Whether Flyway should attempt to create the schemas specified in the schemas property",
-                    false),
-                new ConfigurationParameter("dryRunOutput",
-                    "[teams] File where to output the SQL statements of a migration dry run",
-                    false),
-                new ConfigurationParameter("errorOverrides",
-                    "[teams] Rules to override specific SQL states and errors codes",
-                    false),
-                new ConfigurationParameter("color",
-                    "Whether to colorize output. Values: always, never, or auto (default)",
-                    false),
-                new ConfigurationParameter("outputFile",
-                    "Send output to the specified file alongside the console",
-                    false),
-                new ConfigurationParameter("outputType",
-                    "Serialise the output in the given format, Values: json",
-                    false)));
+            parameters.addAll(allParameters());
         } else {
+            parameters.addAll(driverParameters());
             parameters.add(new ConfigurationParameter("(To see all configuration options please run flyway --help)",
                 null,
                 false));
@@ -645,5 +508,16 @@ public class Main {
             }
             return true;
         }
+    }
+
+    public static List<ConfigurationParameter> driverParameters() {
+        return CoreConfigurationParameters.getConfigurationParameters(CoreConfigurationParameters.DRIVER,
+            CoreConfigurationParameters.URL,
+            CoreConfigurationParameters.USER,
+            CoreConfigurationParameters.PASSWORD);
+    }
+
+    public static List<ConfigurationParameter> allParameters() {
+        return CoreConfigurationParameters.getConfigurationParameters(CoreConfigurationParameters.values());
     }
 }

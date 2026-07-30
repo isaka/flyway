@@ -60,6 +60,12 @@ flyway.schemas=schema1,schema2
 FLYWAY_SCHEMAS=schema1,schema2
 ```
 
+To configure a named environment via an environment variable when using a TOML configuration, prefix `schemas` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_schemas=schema1,schema2
+```
+
 ### API
 
 ```java

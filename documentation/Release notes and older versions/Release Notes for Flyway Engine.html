@@ -9,6 +9,55 @@
 <div class="col-md-9">
 <!-- BEGIN db-generated release notes -->
   <div class="release">
+        <h2 id="13.1.0">Flyway 13.1.0 (2026-07-30)</h2>
+
+        <h3>New features</h3>
+        <ul>
+            <li>`deploy` command result now includes execution time in milliseconds</li>
+            <li>environments_<name>_<setting> and flyway_<setting> environment variables can now use any letter casing in their prefix, e.g. ENVIRONMENTS_PRODUCTION_PASSWORD</li>
+        </ul>
+
+        <h3>Database compatibility</h3>
+        <ul>
+            <li>Databricks Lakebase is now recognised as a supported PostgreSQL-derivative database type in public preview</li>
+            <li>snapshot history is now supported on Databricks</li>
+        </ul>
+
+        <h3>Bug fixes</h3>
+        <ul>
+            <li>Databricks identifiers containing a backtick produced invalid SQL</li>
+            <li>Databricks migrations could fail at the unlock step with a Delta ConcurrentAppendException; the lock keepalive no longer races the unlock</li>
+            <li>
+                <a href="https://github.com/flyway/flyway/issues/4259">Issue 4259</a>
+                Fixed `afterConnect` callback not being fired on the migration connection
+            </li>
+            <li>Fixed an issue that prevented several `after*OperationFinish` SQL callback scripts (clean, validate, undo, repair, baseline) from ever running</li>
+            <li>Fixed an issue where the Docker provisioner for Oracle would immediately exit</li>
+            <li>Fixed dry run failing on Databricks with "Unable to switch connection to read-only" error</li>
+        </ul>
+
+        <h3>Java compatibility</h3>
+        <ul>
+            <li>
+                <a href="https://github.com/flyway/flyway/issues/4240">Issue 4240</a>
+                Log execution of Java callbacks, matching SQL/script callback logging
+            </li>
+        </ul>
+
+        <h3>Library upgrades</h3>
+        <ul>
+            <li>Upgraded jansi to use org.jline.jansi package</li>
+        </ul>
+
+        <h3>Internal dependency</h3>
+        <ul>
+            <li>Upgraded RgCompare to 1.62.4.4998</li>
+        </ul>
+
+  </div>
+
+
+  <div class="release">
         <h2 id="13.0.0">Flyway 13.0.0 (2026-07-20)</h2>
 
         <h3>New features</h3>
@@ -32,11 +81,6 @@
         <h3>Library upgrades</h3>
         <ul>
             <li>Updated jackson-databind to 3.1.5 / 2.22.1 to address a High-severity Incorrect Authorization advisory</li>
-        </ul>
-
-        <h3>Internal dependency</h3>
-        <ul>
-            <li>Upgraded RgCompare to 1.61.4.4850</li>
         </ul>
 
   </div>

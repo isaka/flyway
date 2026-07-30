@@ -101,7 +101,7 @@ public class DatabricksDatabase extends Database<DatabricksConnection> {
 
     @Override
     public String getEscapedQuote() {
-        return "\\`";
+        return "``";
     }
 
     @Override

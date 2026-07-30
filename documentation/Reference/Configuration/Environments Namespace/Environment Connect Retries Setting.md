@@ -54,6 +54,12 @@ flyway.connectRetries=10
 FLYWAY_CONNECT_RETRIES=10
 ```
 
+To configure a named environment via an environment variable when using a TOML configuration, prefix `connectRetries` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_connectRetries=10
+```
+
 ### API
 
 ```java

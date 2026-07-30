@@ -54,6 +54,12 @@ flyway.password=mysecretpassword
 FLYWAY_PASSWORD=mysecretpassword
 ```
 
+To configure a named environment via an environment variable when using a TOML configuration, prefix `password` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_password=mysecretpassword
+```
+
 ### API
 
 When using the Java API, you configure your JDBC URL, User and Password via a datasource.

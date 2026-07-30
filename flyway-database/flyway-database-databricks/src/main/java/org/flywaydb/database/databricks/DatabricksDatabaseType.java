@@ -45,6 +45,11 @@ public class DatabricksDatabaseType extends BaseDatabaseType {
     }
 
     @Override
+    public boolean supportsReadOnlyTransactions() {
+        return false;
+    }
+
+    @Override
     public boolean handlesJDBCUrl(final String url) {
         return url.startsWith("jdbc:databricks:");
     }

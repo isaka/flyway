@@ -52,6 +52,12 @@ flyway.user=myuser
 FLYWAY_USER=myuser
 ```
 
+To configure a named environment via an environment variable when using a TOML configuration, prefix `user` with `environments_{environment name}_`, for example:
+
+```properties
+environments_sample_user=myuser
+```
+
 ### API
 
 When using the Java API, you configure your JDBC URL, User and Password via a datasource.

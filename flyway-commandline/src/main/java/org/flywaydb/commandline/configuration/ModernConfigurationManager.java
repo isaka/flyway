@@ -101,7 +101,8 @@ public class ModernConfigurationManager implements ConfigurationManager {
 
         final ConfigurationModel commandLineArgumentsModel = TomlUtils.loadConfigurationFromCommandlineArgs(
             commandLineArguments.getConfiguration(true));
-        final ConfigurationModel environmentVariablesModel = TomlUtils.loadConfigurationFromEnvironment();
+        final ConfigurationModel environmentVariablesModel = TomlUtils.loadConfigurationFromEnvironment(config.getEnvironments()
+            .keySet());
 
         if (ConfigUtils.detectNullConfigModel(environmentVariablesModel)) {
             LOG.debug("Skipping empty environment variables");
