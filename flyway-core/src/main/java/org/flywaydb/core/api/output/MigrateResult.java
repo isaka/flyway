@@ -19,7 +19,7 @@
  */
 package org.flywaydb.core.api.output;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +48,7 @@ public class MigrateResult extends HtmlResult {
     private transient Map<MigrationKey, MigrateOutput> successfulMigrations = new HashMap<>();
 
     public MigrateResult() {
-        super(LocalDateTime.now(), COMMAND);
+        super(OffsetDateTime.now(), COMMAND);
         migrations = new ArrayList<>();
     }
 
@@ -56,7 +56,7 @@ public class MigrateResult extends HtmlResult {
         final String database,
         final String schemaName,
         final String databaseType) {
-        super(LocalDateTime.now(), COMMAND);
+        super(OffsetDateTime.now(), COMMAND);
         this.flywayVersion = flywayVersion;
         this.database = database;
         this.schemaName = schemaName;

@@ -28,7 +28,6 @@ org.flywaydb.core.internal.proprietaryStubs.DryRunSupportStub
 org.flywaydb.core.internal.proprietaryStubs.AwsSecretsManagerSupportStub
 org.flywaydb.core.internal.proprietaryStubs.DryRunConfigurationExtensionStub
 org.flywaydb.core.internal.proprietaryStubs.LicenseSupportStub
-org.flywaydb.core.internal.publishing.PublishingConfigurationExtension
 org.flywaydb.core.internal.scanner.classpath.ClasspathLocationHandlerImpl
 org.flywaydb.core.internal.scanner.filesystem.FilesystemLocationHandler
 org.flywaydb.core.internal.NullFlywayTelemetryManager

@@ -29,9 +29,7 @@ import static org.flywaydb.core.internal.util.FlywayDbWebsiteLinks.UPGRADE_TO_RE
 import static org.flywaydb.core.internal.util.FlywayDbWebsiteLinks.INFO_REPORT_LEARN_MORE;
 import static org.flywaydb.core.internal.util.FlywayDbWebsiteLinks.MIGRATION_REPORT_LEARN_MORE;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,10 +73,10 @@ public class HtmlReportGenerator {
             .filter(x -> !x.isLicenseFailed())
             .toList();
 
-        final LocalDateTime lastUpdatedTimestamp = allResultsToDisplay.stream()
+        final OffsetDateTime lastUpdatedTimestamp = allResultsToDisplay.stream()
             .map(HtmlResult::getTimestamp)
             .max(Comparator.comparing(Function.identity()))
-            .orElse(LocalDateTime.now());
+            .orElse(OffsetDateTime.now());
         final StringBuilder content = new StringBuilder(getBeginning(lastUpdatedTimestamp));
 
         content.append("<div>\n");
@@ -138,7 +136,7 @@ public class HtmlReportGenerator {
             .replace("{{UPGRADE_TO_REDGATE_FLYWAY}}", UPGRADE_TO_REDGATE_FLYWAY);
     }
 
-    private static String getBeginning(final ChronoLocalDateTime<LocalDate> lastUpdatedTimestamp) {
+    private static String getBeginning(final OffsetDateTime lastUpdatedTimestamp) {
         return "<!doctype html>\n"
             + "<html lang=\"en\">\n"
             + "<head><meta charset=\"utf-8\">\n"
@@ -172,8 +170,8 @@ public class HtmlReportGenerator {
             + renderLastUpdatedTimestamp(lastUpdatedTimestamp);
     }
 
-    private static String renderLastUpdatedTimestamp(final ChronoLocalDateTime<LocalDate> lastUpdatedTimestamp) {
-        final String formattedTimestamp = lastUpdatedTimestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss",
+    private static String renderLastUpdatedTimestamp(final OffsetDateTime lastUpdatedTimestamp) {
+        final String formattedTimestamp = lastUpdatedTimestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xxx",
             Locale.ROOT));
         return "<div>Last updated: " + formattedTimestamp + "</div>\n";
     }

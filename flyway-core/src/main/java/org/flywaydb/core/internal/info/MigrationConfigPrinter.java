@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-commandline
+ * flyway-core
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,18 +17,41 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.commandline;
+package org.flywaydb.core.internal.info;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.flywaydb.core.api.Location;
+import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.logging.Log;
 import org.flywaydb.core.api.migration.baseline.BaselineMigrationConfigurationExtension;
 import org.flywaydb.core.internal.util.AsciiTable;
+import org.flywaydb.core.internal.util.StringUtils;
 
 public class MigrationConfigPrinter {
-    public static void print(final Log log, final Configuration configuration) {
+    public static void printIfNoOnDiskMigrations(final Log log,
+        final MigrationInfo[] infos,
+        final Configuration configuration) {
+        printIfNoOnDiskMigrations(log, infos, configuration, List.of());
+    }
+
+    public static void printIfNoOnDiskMigrations(final Log log,
+        final MigrationInfo[] infos,
+        final Configuration configuration,
+        final List<List<String>> extraRows) {
+        final boolean hasOnDiskMigrations = Arrays.stream(infos)
+            .map(MigrationInfo::getPhysicalLocation)
+            .anyMatch(StringUtils::hasLength);
+
+        if (!hasOnDiskMigrations) {
+            log.info("No migrations found on disk.\nHere are some relevant configuration settings.");
+            print(log, configuration, extraRows);
+        }
+    }
+
+    private static void print(final Log log, final Configuration configuration, final List<List<String>> extraRows) {
         final Location[] locations = configuration.getLocations();
         final String locationsValue = String.join(", ", Arrays.stream(locations).map(Location::toString).toList());
 
@@ -55,14 +78,15 @@ public class MigrationConfigPrinter {
         final String sqlSuffixesValue = String.join(", ", sqlSuffixes);
 
         final List<String> columns = List.of("Setting", "Value");
-        final List<List<String>> rows = List.of(List.of("locations", locationsValue),
+        final List<List<String>> rows = new ArrayList<>(List.of(List.of("locations", locationsValue),
             List.of("callbackLocations", callbackLocationsValue),
             List.of("workingDirectory", workingDirectoryValue),
             List.of("repeatableSqlMigrationPrefix", repeatablePrefixValue),
             List.of("sqlMigrationPrefix", sqlPrefixValue),
             List.of("baselineMigrationPrefix", baselinePrefixValue),
             List.of("sqlMigrationSeparator", sqlSeparatorValue),
-            List.of("sqlMigrationSuffixes", sqlSuffixesValue));
+            List.of("sqlMigrationSuffixes", sqlSuffixesValue)));
+        rows.addAll(extraRows);
 
         log.info("\n" + new AsciiTable(columns, rows, true, "", "No settings found").render());
     }

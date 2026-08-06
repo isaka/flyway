@@ -48,6 +48,13 @@ public class ModernConfigurationMcpConfigurationLoader implements McpConfigurati
             throw new FlywayException("Project root path does not exist: " + projectRoot, CoreErrorCode.CONFIGURATION);
         }
 
+        if (Files.exists(Path.of(projectRoot, ConfigUtils.CONFIG_FILE_NAME))) {
+            throw new FlywayException("Legacy project configuration format ('"
+                + ConfigUtils.CONFIG_FILE_NAME
+                + "') found in project root when loading project. Upgrade the project file to .toml format to continue.",
+                CoreErrorCode.CONFIGURATION);
+        }
+
         final File installDir = new File(ClassUtils.getInstallDir(Main.class));
         final List<File> tomlFiles = ConfigUtils.getDefaultTomlConfigFileLocations(installDir, projectRoot)
             .stream()
@@ -56,12 +63,6 @@ public class ModernConfigurationMcpConfigurationLoader implements McpConfigurati
 
         if (tomlFiles.isEmpty()) {
             throw new FlywayException("No .toml configuration files found in project root.",
-                CoreErrorCode.CONFIGURATION);
-        }
-
-        if (ConfigUtils.getDefaultLegacyConfigurationFiles(installDir, projectRoot).stream().anyMatch(File::exists)) {
-            throw new FlywayException(
-                "Legacy configuration files found in project root. Please migrate all configuration to .toml format.",
                 CoreErrorCode.CONFIGURATION);
         }
 

@@ -21,15 +21,7 @@ package org.flywaydb.database.mysql.authentication;
 
 import lombok.CustomLog;
 import org.flywaydb.core.internal.authentication.ExternalAuthFileReader;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
-import java.io.FileInputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,82 +29,28 @@ import java.util.Locale;
 @CustomLog
 public class MySQLOptionFileReader implements ExternalAuthFileReader {
 
-    public final List<String> optionFiles;
-    private final List<String> encryptedOptionFiles;
+    protected final List<String> optionFiles;
+    protected final List<String> encryptedOptionFiles;
 
     public MySQLOptionFileReader() {
         optionFiles = new ArrayList<>();
         encryptedOptionFiles = new ArrayList<>();
     }
 
+    /**
+     * The OSS edition does not ship an option-file reader, so this reports presence only:
+     * one empty placeholder entry per option file found.
+     */
     @Override
     public List<String> getAllContents() {
-        final List<String> fileContents = new ArrayList<>();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        return fileContents;
+        populateOptionFiles();
+        return optionFiles.stream().map(f -> "").toList();
     }
 
+    protected void populateOptionFiles() {
+        optionFiles.clear();
+        encryptedOptionFiles.clear();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void populateOptionFiles() {
         final boolean isWindows = System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win");
         if (isWindows) {
             final String winDir = System.getenv("WINDIR");

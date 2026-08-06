@@ -36,6 +36,7 @@ import org.flywaydb.core.internal.database.base.Connection;
 import org.flywaydb.core.internal.database.base.Database;
 import org.flywaydb.core.internal.database.base.Schema;
 import org.flywaydb.core.internal.exception.FlywayMigrateException;
+import org.flywaydb.core.internal.info.MigrationConfigPrinter;
 import org.flywaydb.core.internal.info.MigrationInfoImpl;
 import org.flywaydb.core.internal.info.MigrationInfoServiceImpl;
 import org.flywaydb.core.internal.jdbc.ExecutionTemplateFactory;
@@ -202,6 +203,8 @@ public class DbMigrate {
             if (configuration.isOutOfOrder()) {
                 LOG.info("outOfOrder mode is active. Migration of schema " + schema + " may not be reproducible.");
             }
+
+            MigrationConfigPrinter.printIfNoOnDiskMigrations(LOG, infoService.all(), configuration);
         }
 
         final MigrationInfo[] future = infoService.future();

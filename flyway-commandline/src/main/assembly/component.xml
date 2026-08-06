@@ -208,6 +208,7 @@
         <include>org.flywaydb:flyway-database-hsqldb</include>
         <include>org.flywaydb:flyway-database-informix</include>
         <include>org.flywaydb:flyway-database-postgresql</include>
+        <include>org.flywaydb:flyway-database-cockroachdb</include>
         <include>org.flywaydb:flyway-database-oracle</include>
         <include>org.flywaydb:flyway-database-redshift</include>
         <include>org.flywaydb:flyway-database-saphana</include>

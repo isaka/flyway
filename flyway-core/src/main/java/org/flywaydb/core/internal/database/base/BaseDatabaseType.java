@@ -268,6 +268,10 @@ public abstract class BaseDatabaseType implements DatabaseType {
         return new Properties();
     }
 
+    public Properties getExternalAuthProperties(final Configuration config, final String url, final String username) {
+        return getExternalAuthProperties(url, username);
+    }
+
     public Connection alterConnectionAsNeeded(final Connection connection, final Configuration configuration) {
         return connection;
     }

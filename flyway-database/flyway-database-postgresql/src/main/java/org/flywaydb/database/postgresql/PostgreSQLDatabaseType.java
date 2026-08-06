@@ -25,8 +25,6 @@ import static org.flywaydb.core.internal.util.UrlUtils.isSecretManagerUrl;
 import java.util.List;
 import org.flywaydb.core.api.ResourceProvider;
 import org.flywaydb.core.api.configuration.Configuration;
-import org.flywaydb.database.postgresql.authentication.PgpassFileReader;
-
 import org.flywaydb.core.internal.database.base.BaseDatabaseType;
 import org.flywaydb.core.internal.database.base.Database;
 import org.flywaydb.core.internal.jdbc.JdbcConnectionFactory;
@@ -39,12 +37,10 @@ import lombok.CustomLog;
 import java.sql.Connection;
 import java.sql.Types;
 import java.util.Properties;
+import org.flywaydb.database.postgresql.authentication.PostgreSQLExternalAuthSupport;
 
 @CustomLog
 public class PostgreSQLDatabaseType extends BaseDatabaseType {
-
-
-
 
     @Override
     public String getName() {
@@ -104,44 +100,33 @@ public class PostgreSQLDatabaseType extends BaseDatabaseType {
         props.put("applicationName", BaseDatabaseType.APPLICATION_NAME);
     }
 
+    private boolean detectUserRequiredInUrl(String url) {
+        return !url.contains("user=");
+    }
 
+    private boolean detectPasswordRequiredInUrl(String url) {
+        if (url.startsWith("jdbc-secretsmanager:postgresql:")) {
+            return false;
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return !url.contains("password=");
+    }
 
     @Override
-    public Properties getExternalAuthProperties(final String url, final String username) {
-        final PgpassFileReader pgpassFileReader = new PgpassFileReader();
+    public boolean externalAuthPropertiesRequired(String url, String username, String password) {
+        return (StringUtils.hasText(username) || !detectUserRequiredInUrl(url))
+            && !StringUtils.hasText(password)
+            && detectPasswordRequiredInUrl(url);
+    }
 
-                if (pgpassFileReader.getPgpassFilePath() != null) {
-                    LOG.info(org.flywaydb.core.internal.license.FlywayUpgradeMessage.generate(
-                            "pgpass file '" + pgpassFileReader.getPgpassFilePath() + "'",
-                            "use this for database authentication"));
-                }
-                return super.getExternalAuthProperties(url, username);
+    @Override
+    public Properties getExternalAuthProperties(final Configuration config, final String url, final String username) {
+        if (config == null) {
+            return new Properties();
+        }
 
-
-
-
-
-
-
+        return config.getPluginRegister()
+            .getInstanceOf(PostgreSQLExternalAuthSupport.class)
+            .getExternalAuthProperties(url, username);
     }
 }

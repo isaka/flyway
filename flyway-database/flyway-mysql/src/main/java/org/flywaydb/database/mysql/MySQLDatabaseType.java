@@ -26,8 +26,7 @@ import java.util.List;
 import lombok.CustomLog;
 import org.flywaydb.core.api.ResourceProvider;
 import org.flywaydb.core.api.configuration.Configuration;
-import org.flywaydb.database.mysql.authentication.MySQLOptionFileReader;
-
+import org.flywaydb.database.mysql.authentication.MySQLExternalAuthSupport;
 import org.flywaydb.core.internal.database.base.BaseDatabaseType;
 import org.flywaydb.core.internal.database.base.Database;
 import org.flywaydb.core.internal.jdbc.JdbcConnectionFactory;
@@ -45,10 +44,6 @@ import java.util.Properties;
 public class MySQLDatabaseType extends BaseDatabaseType {
     private static final String MYSQL_LEGACY_JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static final String MARIADB_JDBC_DRIVER = "org.mariadb.jdbc.Driver";
-
-
-
-
 
     @Override
     public String getName() {
@@ -132,33 +127,22 @@ public class MySQLDatabaseType extends BaseDatabaseType {
         props.put("connectionAttributes", "program_name:" + APPLICATION_NAME);
     }
 
-
-
-
-
-
-
-
-
-
-
+    private boolean detectPasswordRequiredInUrl(String url) {
+        return !url.startsWith("jdbc-secretsmanager:mysql:");
+    }
 
     @Override
-    public Properties getExternalAuthProperties(final String url, final String username) {
-        final MySQLOptionFileReader mySQLOptionFileReader = new MySQLOptionFileReader();
+    public boolean externalAuthPropertiesRequired(String url, String username, String password) {
+        return !StringUtils.hasText(username) || (!StringUtils.hasText(password) && detectPasswordRequiredInUrl(url));
+    }
 
-                mySQLOptionFileReader.populateOptionFiles();
-                if (!mySQLOptionFileReader.optionFiles.isEmpty()) {
-                    LOG.info(org.flywaydb.core.internal.license.FlywayUpgradeMessage.generate("a MySQL option file", "use this for database authentication"));
-                }
-                return super.getExternalAuthProperties(url, username);
+    @Override
+    public Properties getExternalAuthProperties(final Configuration config, final String url, final String username) {
+        if (config == null) {
+            return new Properties();
+        }
 
-
-
-
-
-
-
+        return config.getPluginRegister().getInstanceOf(MySQLExternalAuthSupport.class).getExternalAuthProperties();
     }
 
     @Override

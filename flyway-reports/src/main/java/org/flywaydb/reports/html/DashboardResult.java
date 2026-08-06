@@ -19,7 +19,7 @@
  */
 package org.flywaydb.reports.html;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import lombok.Getter;
@@ -32,7 +32,7 @@ public class DashboardResult extends HtmlResult {
     private Collection<HtmlResult> results;
 
     public DashboardResult(final Collection<? extends HtmlResult> results) {
-        super(LocalDateTime.now(), "dashboard");
+        super(OffsetDateTime.now(), "dashboard");
         this.results = List.copyOf(results);
     }
 }

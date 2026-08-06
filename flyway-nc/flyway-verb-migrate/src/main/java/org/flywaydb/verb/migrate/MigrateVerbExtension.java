@@ -41,6 +41,7 @@ import org.flywaydb.core.api.output.ValidateResult;
 import org.flywaydb.core.api.pattern.ValidatePattern;
 import org.flywaydb.core.internal.Topic;
 import org.flywaydb.core.internal.configuration.CoreConfigurationParameters;
+import org.flywaydb.core.internal.info.MigrationConfigPrinter;
 import org.flywaydb.core.internal.nc.NativeConnectorsDatabase;
 import org.flywaydb.core.extensibility.ConfigurationParameter;
 import org.flywaydb.core.extensibility.VerbExtension;
@@ -186,6 +187,8 @@ public class MigrateVerbExtension implements VerbExtension {
             + database.doQuote(database.getCurrentSchema())
             + ": "
             + initialSchemaVersion);
+
+        MigrationConfigPrinter.printIfNoOnDiskMigrations(LOG, migrationInfoService.all(), configuration);
 
         // To maintain consistency with legacy code, perform an additional round of validation regardless of whether validateOnMigrate is enabled
         secondValidate(migrationInfoService, configuration, database.doQuote(database.getCurrentSchema()));

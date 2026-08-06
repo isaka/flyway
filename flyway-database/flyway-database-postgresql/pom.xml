@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.flywaydb</groupId>
     <artifactId>flyway-parent</artifactId>
-    <version>13.1.0</version>
+    <version>13.2.0</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -17,6 +17,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flyway-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <!-- Only needed to avoid a breaking change for API users when CockroachDB was moved out of this module. Remove once consumers have migrated. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>flyway-database-cockroachdb</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>

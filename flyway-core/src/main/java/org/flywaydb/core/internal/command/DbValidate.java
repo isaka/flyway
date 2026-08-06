@@ -36,7 +36,6 @@ import org.flywaydb.core.internal.info.MigrationInfoServiceImpl;
 import org.flywaydb.core.internal.jdbc.ExecutionTemplateFactory;
 import org.flywaydb.core.internal.resolver.CompositeMigrationResolver;
 import org.flywaydb.core.internal.schemahistory.SchemaHistory;
-import org.flywaydb.core.internal.util.Pair;
 import org.flywaydb.core.internal.util.StopWatch;
 import org.flywaydb.core.internal.util.TimeFormat;
 import org.flywaydb.core.internal.util.ValidatePatternUtils;
@@ -63,6 +62,8 @@ public class DbValidate {
     private final CallbackExecutor<Event> callbackExecutor;
     private final Connection connection;
     private final ValidatePattern[] ignorePatterns;
+
+    private record ValidationOutcome(int allMigrationsCount, boolean hasResolvedMigrations, List<ValidateOutput> invalidMigrations) {}
 
     /**
      * Creates a new database validator.
@@ -112,7 +113,7 @@ public class DbValidate {
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        final Pair<Integer, List<ValidateOutput>> result = ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(),
+        final ValidationOutcome outcome = ExecutionTemplateFactory.createExecutionTemplate(connection.getJdbcConnection(),
             database).execute(() -> {
             final MigrationInfoServiceImpl migrationInfoService = new MigrationInfoServiceImpl(migrationResolver,
                 schemaHistory,
@@ -124,19 +125,20 @@ public class DbValidate {
 
             migrationInfoService.refresh();
 
-            final int count = migrationInfoService.all().length;
+            final int allMigrationsCount = migrationInfoService.all().length;
+            final boolean hasResolvedMigrations = migrationInfoService.resolved().length > 0;
             final List<ValidateOutput> invalidMigrations = migrationInfoService.validate();
-            return Pair.of(count, invalidMigrations);
+            return new ValidationOutcome(allMigrationsCount, hasResolvedMigrations, invalidMigrations);
         });
 
         stopWatch.stop();
 
         final List<String> warnings = new ArrayList<>();
-        final List<ValidateOutput> invalidMigrations = result.getRight();
+        final List<ValidateOutput> invalidMigrations = outcome.invalidMigrations();
         ErrorDetails validationError = null;
         int count = 0;
         if (invalidMigrations.isEmpty()) {
-            count = result.getLeft();
+            count = outcome.allMigrationsCount();
             if (count == 1) {
                 LOG.info(String.format("Successfully validated 1 migration (execution time %s)",
                     TimeFormat.format(stopWatch.getTotalTimeMillis())));
@@ -151,6 +153,16 @@ public class DbValidate {
                     LOG.warn(noMigrationsWarning);
                 }
             }
+
+            if (count > 0 && !outcome.hasResolvedMigrations()) {
+                final String noResolvedMigrationsWarning = "No migrations could be resolved from the configured "
+                    + "locations, but "
+                    + count
+                    + " applied migration(s) were found in the schema history. Are your locations set up correctly?";
+                warnings.add(noResolvedMigrationsWarning);
+                LOG.warn(noResolvedMigrationsWarning);
+            }
+
             callbackExecutor.onEvent(Event.AFTER_VALIDATE);
         } else {
             validationError = new ErrorDetails(CoreErrorCode.VALIDATE_ERROR, "Migrations have failed validation");

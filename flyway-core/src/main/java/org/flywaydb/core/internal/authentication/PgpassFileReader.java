@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-database-postgresql
+ * flyway-core
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,10 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.database.postgresql.authentication;
-
-import lombok.CustomLog;
-import org.flywaydb.core.internal.authentication.ExternalAuthFileReader;
+package org.flywaydb.core.internal.authentication;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import lombok.CustomLog;
 
 @CustomLog
 public class PgpassFileReader implements ExternalAuthFileReader {

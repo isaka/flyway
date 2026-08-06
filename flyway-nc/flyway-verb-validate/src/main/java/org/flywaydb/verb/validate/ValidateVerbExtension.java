@@ -20,6 +20,7 @@
 package org.flywaydb.verb.validate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.CustomLog;
 import java.util.Set;
@@ -126,28 +127,27 @@ public class ValidateVerbExtension extends CachingVerbExtension {
 
             callbackManager.handleEvent(Event.AFTER_VALIDATE, database, configuration, context.getParsingContext());
 
+            final ArrayList<String> warnings = new ArrayList<>();
             if (migrations.length == 0) {
-                final ArrayList<String> warnings = new ArrayList<>();
                 final String noMigrationsWarning = "No migrations found. Are your locations set up correctly?";
                 warnings.add(noMigrationsWarning);
                 LOG.warn(noMigrationsWarning);
-
-                return new ValidateResult(VersionPrinter.getVersion(),
-                    database.getDatabaseMetaData().databaseName(),
-                    null,
-                    true,
-                    migrations.length,
-                    new ArrayList<>(),
-                    warnings);
+            } else if (Arrays.stream(migrations).noneMatch(x -> x.getState().isResolved())) {
+                final String noResolvedMigrationsWarning = "No migrations could be resolved from the configured "
+                    + "locations, but "
+                    + count
+                    + " applied migration(s) were found in the schema history. Are your locations set up correctly?";
+                warnings.add(noResolvedMigrationsWarning);
+                LOG.warn(noResolvedMigrationsWarning);
             }
 
             return new ValidateResult(VersionPrinter.getVersion(),
                 database.getDatabaseMetaData().databaseName(),
                 null,
                 true,
-                migrations.length,
+                count,
                 invalidMigrations,
-                new ArrayList<>());
+                warnings);
         }
 
         callbackManager.handleEvent(Event.AFTER_VALIDATE_ERROR, database, configuration, context.getParsingContext());

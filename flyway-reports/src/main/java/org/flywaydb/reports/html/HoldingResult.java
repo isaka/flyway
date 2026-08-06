@@ -19,7 +19,7 @@
  */
 package org.flywaydb.reports.html;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import org.flywaydb.core.api.output.HtmlResult;
 
@@ -32,7 +32,7 @@ public class HoldingResult extends HtmlResult {
         final String tabTitle,
         final String bodyText,
         final Exception exception) {
-        super(LocalDateTime.now(), operation);
+        super(OffsetDateTime.now(), operation);
         this.tabTitle = tabTitle;
         this.bodyText = bodyText;
         setException(exception);

@@ -229,7 +229,7 @@ public class DriverDataSource implements DataSource {
         this.password = detectFallbackPassword(password);
 
         if (type.externalAuthPropertiesRequired(url, user, password)) {
-            this.defaultProperties.putAll(type.getExternalAuthProperties(url, user));
+            this.defaultProperties.putAll(type.getExternalAuthProperties(configuration, url, user));
         }
     }
 

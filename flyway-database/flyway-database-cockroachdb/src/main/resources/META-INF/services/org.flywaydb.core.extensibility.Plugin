@@ -1,0 +1,2 @@
+org.flywaydb.database.cockroachdb.CockroachDBDatabaseType
+org.flywaydb.database.cockroachdb.authentication.CockroachDBExternalAuthSupportStub

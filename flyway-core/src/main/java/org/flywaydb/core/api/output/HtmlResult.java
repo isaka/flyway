@@ -20,6 +20,9 @@
 package org.flywaydb.core.api.output;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,18 +43,22 @@ public class HtmlResult implements OperationResult {
     @Setter
     private boolean licenseFailed;
 
-    public HtmlResult(final LocalDateTime timestamp, final String operation) {
+    public HtmlResult(final OffsetDateTime timestamp, final String operation) {
         setTimestamp(timestamp);
         this.operation = operation;
     }
 
     @Tolerate
-    public void setTimestamp(final LocalDateTime timestamp) {
+    public void setTimestamp(final OffsetDateTime timestamp) {
         this.timestamp = timestamp.toString();
     }
 
-    public LocalDateTime getTimestamp() {
-        return LocalDateTime.parse(timestamp);
+    public OffsetDateTime getTimestamp() {
+        try {
+            return OffsetDateTime.parse(timestamp);
+        } catch (final DateTimeParseException e) {
+            return LocalDateTime.parse(timestamp).atZone(ZoneId.systemDefault()).toOffsetDateTime();
+        }
     }
 
     public void setException(final Exception exception) {

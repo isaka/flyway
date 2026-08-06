@@ -17,7 +17,11 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-/**
- * Private API. No compatibility guarantees provided.
- */
-package org.flywaydb.database.cockroachdb;
+package org.flywaydb.database.postgresql.authentication;
+
+import java.util.Properties;
+import org.flywaydb.core.extensibility.Plugin;
+
+public interface PostgreSQLExternalAuthSupport extends Plugin {
+    Properties getExternalAuthProperties(final String url, final String username);
+}

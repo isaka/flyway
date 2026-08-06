@@ -239,6 +239,8 @@ public interface DatabaseType extends GeneralDatabaseType {
      */
     Properties getExternalAuthProperties(String url, String username);
 
+    Properties getExternalAuthProperties(Configuration config, String url, String username);
+
     /**
      * Carries out any manipulation on the Connection that is required by Flyway's config
      *

@@ -19,7 +19,7 @@
  */
 package org.flywaydb.core.api.output;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Setter;
 
@@ -34,7 +34,7 @@ public class InfoResult extends HtmlResult {
     public boolean allSchemasEmpty;
 
     public InfoResult() {
-        super(LocalDateTime.now(), COMMAND);
+        super(OffsetDateTime.now(), COMMAND);
     }
 
     public InfoResult(final String flywayVersion,
@@ -43,7 +43,7 @@ public class InfoResult extends HtmlResult {
         final String schemaName,
         final List<InfoOutput> migrations,
         final boolean allSchemasEmpty) {
-        super(LocalDateTime.now(), COMMAND);
+        super(OffsetDateTime.now(), COMMAND);
         this.flywayVersion = flywayVersion;
         this.database = database;
         this.schemaVersion = schemaVersion;

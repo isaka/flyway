@@ -30,7 +30,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -66,6 +65,7 @@ import org.flywaydb.core.extensibility.LicenseGuard;
 import org.flywaydb.core.internal.configuration.CoreConfigurationParameters;
 import org.flywaydb.core.internal.configuration.HelpText;
 import org.flywaydb.core.internal.exception.FlywayMigrateException;
+import org.flywaydb.core.internal.info.MigrationConfigPrinter;
 import org.flywaydb.core.internal.info.MigrationFilterImpl;
 import org.flywaydb.core.internal.info.MigrationInfoDumper;
 import org.flywaydb.core.internal.license.FlywayExpiredLicenseKeyException;
@@ -356,14 +356,7 @@ public class Main {
                     final MigrationFilter filter = getInfoFilter(commandLineArguments);
                     result = info.getInfoResult(filter);
                     final MigrationInfo[] infos = info.all(filter);
-                    final boolean hasOnDiskMigrations = Arrays.stream(infos)
-                        .map(MigrationInfo::getPhysicalLocation)
-                        .anyMatch(StringUtils::hasLength);
-
-                    if (!hasOnDiskMigrations) {
-                        LOG.info("No migrations found on disk.\nHere are some relevant configuration settings.");
-                        MigrationConfigPrinter.print(LOG, configuration);
-                    }
+                    MigrationConfigPrinter.printIfNoOnDiskMigrations(LOG, infos, configuration);
 
                     if (commandLineArguments.isFilterOnMigrationIds()) {
                         //Must use System.out here rather than LOG.info because LogCreator is empty.

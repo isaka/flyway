@@ -1874,21 +1874,21 @@ Source: https://app.snyk.io/vuln/snyk:lic:maven:org.apache.maven.shared:maven-sh
 <license-texts/Apache-2.0-0.txt>
 -------------------------------------
 -------------------------------------
-org.bouncycastle:bcpkix-jdk18on 1.84
+org.bouncycastle:bcpkix-jdk18on 1.85
 -------------------------------------
 Source: https://app.snyk.io/vuln/snyk:lic:maven:org.bouncycastle:bcpkix-jdk18on:MIT
 
 <license-texts/MIT-0.txt>
 -------------------------------------
 -------------------------------------
-org.bouncycastle:bcprov-jdk18on 1.84
+org.bouncycastle:bcprov-jdk18on 1.85
 -------------------------------------
 Source: https://app.snyk.io/vuln/snyk:lic:maven:org.bouncycastle:bcprov-jdk18on:MIT
 
 <license-texts/MIT-0.txt>
 -------------------------------------
 -------------------------------------
-org.bouncycastle:bcutil-jdk18on 1.84
+org.bouncycastle:bcutil-jdk18on 1.85
 -------------------------------------
 Source: https://app.snyk.io/vuln/snyk:lic:maven:org.bouncycastle:bcutil-jdk18on:MIT
 

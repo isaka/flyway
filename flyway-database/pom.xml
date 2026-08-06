@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.flywaydb</groupId>
     <artifactId>flyway-parent</artifactId>
-    <version>13.1.0</version>
+    <version>13.2.0</version>
   </parent>
 
   <artifactId>flyway-database</artifactId>
@@ -19,6 +19,7 @@
     <module>flyway-database-hsqldb</module>
     <module>flyway-database-informix</module>
     <module>flyway-database-postgresql</module>
+    <module>flyway-database-cockroachdb</module>
     <module>flyway-database-oracle</module>
     <module>flyway-database-redshift</module>
     <module>flyway-database-saphana</module>
@@ -36,6 +37,10 @@
     <module>flyway-database-nc-cassandra</module>
     <module>flyway-database-nc-couchbase</module>
     <module>flyway-database-nc-sqlite</module>
+
+
+
+
 
 
 

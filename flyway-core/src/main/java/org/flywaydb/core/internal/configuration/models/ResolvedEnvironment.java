@@ -37,7 +37,6 @@ public class ResolvedEnvironment {
     private String password;
     private String driver;
     private List<String> schemas = List.of();
-    private String token;
     private Integer connectRetries;
     private Integer connectRetriesInterval;
     private String initSql;
