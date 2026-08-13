@@ -196,19 +196,9 @@ public class DB2Schema extends Schema<DB2Database, DB2Table> {
         final String dropSeqGenQuery = "select TABNAME from SYSCAT.TABLES where TYPE='V' AND TABSCHEMA = '"
             + name
             + "'"
-            +
-
-
-
-
-
-                // Filter out statistical view for an index with an expression-based key
-                // See https://www.ibm.com/support/knowledgecenter/SSEPGG_10.5.0/com.ibm.db2.luw.sql.ref.doc/doc/r0001063.html
-                " and substr(property,19,1) <> 'Y'"
-
-
-
-            ;
+            // Filter out statistical view for an index with an expression-based key
+            // See https://www.ibm.com/docs/en/db2/10.5.0?topic=views-syscattables
+            + (database.getVersion().isAtLeast("10.5") ? " and substr(property,19,1) <> 'Y'" : "");
 
         return buildDropStatements("DROP VIEW", dropSeqGenQuery);
     }

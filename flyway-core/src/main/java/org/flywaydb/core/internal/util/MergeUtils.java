@@ -109,4 +109,21 @@ public class MergeUtils {
             LOG.error("Failed to get value from field when merging model", e);
         }
     }
+    
+    public static <T> void copyModel(final T source, final T target) {
+        try {
+            Class<?> clas = source.getClass();
+            while (clas != null) {
+                for (final Field field : clas.getDeclaredFields()) {
+                    if (!Modifier.isFinal(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
+                        field.setAccessible(true);
+                        field.set(target, field.get(source));
+                    }
+                }
+                clas = clas.getSuperclass();
+            }
+        } catch (Exception e) {
+            LOG.error("Failed to get value from field when copying model", e);
+        }
+    }
 }

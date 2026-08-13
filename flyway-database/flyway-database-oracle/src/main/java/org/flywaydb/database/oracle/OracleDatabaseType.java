@@ -30,18 +30,11 @@ import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.ResourceProvider;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.configuration.Configuration;
-import org.flywaydb.core.extensibility.LicenseGuard;
-import org.flywaydb.core.extensibility.Tier;
 import org.flywaydb.core.internal.callback.CallbackExecutor;
-import org.flywaydb.core.internal.database.DatabaseType;
 import org.flywaydb.core.internal.database.base.BaseDatabaseType;
 import org.flywaydb.core.internal.database.base.Database;
-import org.flywaydb.core.internal.license.FlywayEditionUpgradeRequiredException;
-import org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor;
 import org.flywaydb.core.internal.util.StringUtils;
-
 import org.flywaydb.core.internal.jdbc.JdbcConnectionFactory;
-import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.flywaydb.core.internal.jdbc.StatementInterceptor;
 import org.flywaydb.core.internal.parser.Parser;
 import org.flywaydb.core.internal.parser.ParsingContext;
@@ -52,13 +45,10 @@ import java.util.logging.LogManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
-
-
 
 @CustomLog
 public class OracleDatabaseType extends BaseDatabaseType {
@@ -117,25 +107,9 @@ public class OracleDatabaseType extends BaseDatabaseType {
     public Parser createParser(final Configuration configuration,
         final ResourceProvider resourceProvider,
         final ParsingContext parsingContext) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-         return new OracleParser(configuration, parsingContext);
-
+        return configuration.getPluginRegister()
+            .getInstanceOf(OracleParserSupport.class)
+            .getOracleParser(configuration, this, resourceProvider, parsingContext);
     }
 
     @Override
@@ -143,26 +117,22 @@ public class OracleDatabaseType extends BaseDatabaseType {
         final CallbackExecutor<Event> callbackExecutor,
         final StatementInterceptor statementInterceptor) {
         final boolean supportsBatch = jdbcConnectionFactory.isSupportsBatch();
-
-        final DatabaseType thisRef = this;
+        final Configuration configuration = jdbcConnectionFactory.getConfiguration();
 
         return (connection, undo, batch, outputQueryResults) -> {
             if (!supportsBatch) {
                 batch = false;
             }
 
-
-
-
-
-
-
-
-
-
-
-             return new DefaultSqlScriptExecutor(new JdbcTemplate(connection, thisRef), callbackExecutor, undo, batch, outputQueryResults, statementInterceptor);
-
+            return configuration.getPluginRegister()
+                .getInstanceOf(OracleSqlScriptExecutorSupport.class)
+                .getOracleSqlScriptExecutor(this,
+                    connection,
+                    callbackExecutor,
+                    undo,
+                    batch,
+                    outputQueryResults,
+                    statementInterceptor);
         };
     }
 
@@ -187,61 +157,11 @@ public class OracleDatabaseType extends BaseDatabaseType {
             final OracleConfigurationExtension configurationExtension = config.getPluginRegister()
                 .getExact(OracleConfigurationExtension.class);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            if (configurationExtension.getWalletLocation() != null) {
-                throw new FlywayEditionUpgradeRequiredException(LicenseGuard.getTier(config),
-                    "oracle.net.wallet_location");
-            }
-            if (!config.getKerberosConfigFile().isEmpty()) {
-                throw new FlywayEditionUpgradeRequiredException(LicenseGuard.getTier(config),
-                    "oracle.kerberos.config.file");
-            }
+            config.getPluginRegister()
+                .getInstanceOf(OracleKerberosSupport.class)
+                .configureKerberos(config, configurationExtension, props, classLoader);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Override
     public Connection alterConnectionAsNeeded(final Connection connection, final Configuration configuration) {
@@ -308,15 +228,10 @@ public class OracleDatabaseType extends BaseDatabaseType {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public List<String> getSpecialResourceFilenames(Configuration configuration) {
+        return configuration.getPluginRegister()
+            .getInstanceOf(OracleSpecialResourceFileSupport.class)
+            .getSpecialResourceFilenames(configuration);
+    }
 }

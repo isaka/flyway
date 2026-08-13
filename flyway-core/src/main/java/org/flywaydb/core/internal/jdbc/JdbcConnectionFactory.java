@@ -42,6 +42,7 @@ public class JdbcConnectionFactory implements Closeable {
     private final DataSource dataSource;
     private final int connectRetries;
     private final int connectRetriesInterval;
+    @Getter
     private final Configuration configuration;
     @Getter
     private final DatabaseType databaseType;

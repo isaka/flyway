@@ -310,16 +310,8 @@ public class OracleDatabase extends Database<OracleConnection> {
         final boolean oracle12cOrHigher = getVersion().isAtLeast("12");
         result.addAll(getMainConnection().getJdbcTemplate()
             .queryForStringList("SELECT USERNAME FROM ALL_USERS "
-                    + "WHERE REGEXP_LIKE(USERNAME, '^(APEX|FLOWS)_\\d+$')"
-                    +
-
-
-
-                        " OR ORACLE_MAINTAINED = 'Y'"
-
-
-
-                               ));
+                + "WHERE REGEXP_LIKE(USERNAME, '^(APEX|FLOWS)_\\d+$')"
+                + (oracle12cOrHigher ? " OR ORACLE_MAINTAINED = 'Y'" : "")));
 
         // For earlier Oracle versions check also DBA_REGISTRY if possible.
         if (!oracle12cOrHigher && isDataDictViewAccessible("DBA_REGISTRY")) {

@@ -22,10 +22,15 @@ package org.flywaydb.core.extensibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import tools.jackson.databind.ObjectMapper;
 import org.flywaydb.core.api.FlywayException;
+import org.flywaydb.core.internal.util.ClassUtils;
+import org.flywaydb.core.internal.util.MergeUtils;
 
 import java.util.Map;
 
 public interface ConfigurationExtension extends Plugin {
+    boolean JACKSON_DATABIND_PRESENT = ClassUtils.isPresent("tools.jackson.databind.ObjectMapper",
+        ConfigurationExtension.class.getClassLoader());
+
     @JsonIgnore
     String getNamespace();
 
@@ -38,12 +43,32 @@ public interface ConfigurationExtension extends Plugin {
         return null;
     }
 
+    /**
+     * A copy of this instance. With jackson-databind present, cloned via a JSON round-trip, so
+     * nested mutable state is independent of the source - but copying goes through bean
+     * getters/setters, so derived getters, {@code @JsonIgnore} fields, and {@code final} fields
+     * can end up copied differently than a raw field copy would. Without jackson-databind, falls
+     * back to a reflection-based shallow copy of declared fields (skipping {@code final} ones) -
+     * nested mutable state is shared with the source instead. The two paths aren't guaranteed to
+     * match beyond plain, unannotated fields.
+     */
     @Override
     default Plugin copy() {
-        final ObjectMapper objectMapper = new ObjectMapper();
+        if (JACKSON_DATABIND_PRESENT) {
+            final ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                return objectMapper.readValue(objectMapper.writeValueAsString(this), this.getClass());
+            } catch (final Exception e) {
+                throw new FlywayException(e);
+            }
+        }
+
         try {
-            return objectMapper.readValue(objectMapper.writeValueAsString(this), this.getClass());
-        } catch (Exception e) {
+            final ConfigurationExtension target = getClass().getDeclaredConstructor()
+                .newInstance();
+            MergeUtils.copyModel(this, target);
+            return target;
+        } catch (final Exception e) {
             throw new FlywayException(e);
         }
     }
