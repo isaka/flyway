@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-core
+ * flyway-core-utilities
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,14 +17,12 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.core.internal.logging;
+package org.flywaydb.core.utilities.logging;
 
-import org.flywaydb.core.api.logging.Log;
-import org.flywaydb.core.api.logging.LogCreator;
-
-public class JsonLogCreator implements LogCreator {
-    @Override
-    public Log createLogger(final Class<?> clazz) {
-        return new JsonLog();
-    }
+public enum LogLevel {
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+    NOTICE
 }

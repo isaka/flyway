@@ -19,6 +19,10 @@
  */
 package org.flywaydb.core.internal.reports;
 
+import java.util.Collection;
+import java.util.Objects;
+import org.flywaydb.core.api.output.HtmlResult;
+
 public class ReportGenerationOutputMerger {
 
     public static ReportGenerationOutput merge(final ReportGenerationOutput first,
@@ -65,5 +69,14 @@ public class ReportGenerationOutputMerger {
         }
         first.addSuppressed(second);
         return first;
+    }
+
+    public static Exception getAggregateExceptions(final Collection<? extends HtmlResult> results) {
+        Exception aggregate = null;
+        final var exceptions = results.stream().map(x -> x.exceptionObject).filter(Objects::nonNull).toList();
+        for (final Exception e : exceptions) {
+            aggregate = mergeExceptions(aggregate, e);
+        }
+        return aggregate;
     }
 }

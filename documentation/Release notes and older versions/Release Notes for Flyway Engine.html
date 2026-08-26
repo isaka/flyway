@@ -9,6 +9,46 @@
 <div class="col-md-9">
 <!-- BEGIN db-generated release notes -->
   <div class="release">
+        <h2 id="13.4.0">Flyway 13.4.0 (2026-08-26)</h2>
+
+        <h3>New features</h3>
+        <ul>
+            <li>The Flyway command line and Docker images now automatically use the proxy configured in your operating system. Set the FLYWAY_USE_SYSTEM_PROXIES environment variable to false to disable this.</li>
+        </ul>
+
+        <h3>Changes</h3>
+        <ul>
+            <li>removed the unused g++ compiler toolchain from the Redgate Azure Docker images</li>
+        </ul>
+
+        <h3>Database compatibility</h3>
+        <ul>
+            <li>
+                <a href="https://github.com/flyway/flyway/issues/4269">Issue 4269</a>
+                Snowflake parser supports AGENT IF EXISTS clause
+            </li>
+        </ul>
+
+        <h3>Bug fixes</h3>
+        <ul>
+            <li>fixed Oracle parser failing with "Incomplete statement" when a PL/SQL package body referenced a table or column literally named CASE after INSERT INTO, UPDATE, JOIN, CREATE TABLE, or AS</li>
+            <li>the `docker` provisioner rejected a `sourceEnvironment` that declared `provisioner = "none"`, reporting it as already provisioned</li>
+        </ul>
+
+        <h3>Java compatibility</h3>
+        <ul>
+            <li>`TOML` support is no longer bundled with `flyway-core` and is now provided through the new `flyway-core-utilities` module</li>
+        </ul>
+
+        <h3>Internal dependency</h3>
+        <ul>
+            <li>Upgraded RgCompare to 1.62.7.5446</li>
+        </ul>
+
+  </div>
+
+
+  <div class="release">
         <h2 id="13.3.0">Flyway 13.3.0 (2026-08-13)</h2>
 
         <h3>Bug fixes</h3>
@@ -19,11 +59,6 @@
         <h3>Java compatibility</h3>
         <ul>
             <li>`ConfigurationExtension.copy()` no longer requires `jackson-databind` on the `classpath`; if it's absent, `copy()` falls back to a shallow copy</li>
-        </ul>
-
-        <h3>Internal dependency</h3>
-        <ul>
-            <li>Upgraded RgCompare to 1.62.6.5172</li>
         </ul>
 
   </div>

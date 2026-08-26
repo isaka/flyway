@@ -17,20 +17,22 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.core.internal.configuration;
+package org.flywaydb.core;
 
-import tools.jackson.core.JsonParser;
-import tools.jackson.databind.DeserializationContext;
+import java.util.function.Function;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import tools.jackson.databind.ValueDeserializer;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ProgressLoggerJsonFactory {
+    @Setter
+    private static volatile Function<String, ProgressLogger> supplier;
 
-public class ListDeserializer extends ValueDeserializer<List<String>> {
-
-    @Override
-    public List<String> deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) {
-        return Arrays.stream(jsonParser.getValueAsString().split(",")).collect(Collectors.toList());
+    public static ProgressLogger get(final String operationName) {
+        if (supplier == null) {
+            return new ProgressLoggerEmpty();
+        }
+        return supplier.apply(operationName);
     }
 }

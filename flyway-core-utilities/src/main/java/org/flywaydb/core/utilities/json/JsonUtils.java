@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-core
+ * flyway-core-utilities
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.core.internal.util;
+package org.flywaydb.core.utilities.json;
 
 import static org.flywaydb.core.internal.util.FileUtils.createDirIfNotExists;
 

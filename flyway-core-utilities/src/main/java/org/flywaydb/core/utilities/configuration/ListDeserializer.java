@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-core
+ * flyway-core-utilities
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,6 +17,20 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.core.internal.logging;
+package org.flywaydb.core.utilities.configuration;
 
-public record JsonLogModel(LogLevel level, String message) {}
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import tools.jackson.databind.ValueDeserializer;
+
+public class ListDeserializer extends ValueDeserializer<List<String>> {
+
+    @Override
+    public List<String> deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) {
+        return Arrays.stream(jsonParser.getValueAsString().split(",")).collect(Collectors.toList());
+    }
+}

@@ -26,4 +26,14 @@ import org.flywaydb.core.extensibility.Plugin;
 public interface ResultReportGenerator extends Plugin {
 
     ReportGenerationOutput generateReport(OperationResult operationResult, Configuration configuration);
+
+    default boolean shouldGenerateReport(final String operation, final Configuration configuration) {
+        return configuration.getPluginRegister()
+            .getInstancesOf(ReportGenerationConfiguration.class)
+            .stream()
+            .filter(config -> config.getReportType().equalsIgnoreCase(operation))
+            .findFirst()
+            .map(ReportGenerationConfiguration::isGenerateReport)
+            .orElse(configuration.isReportEnabled());
+    }
 }

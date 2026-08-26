@@ -23,9 +23,11 @@ import org.flywaydb.core.ProgressLogger;
 import org.flywaydb.core.api.FlywayException;
 
 public class EnvironmentProvisionerNone implements EnvironmentProvisioner {
+    public static final String NAME = "none";
+
     @Override
     public String getName() {
-        return "none";
+        return NAME;
     }
 
     @Override

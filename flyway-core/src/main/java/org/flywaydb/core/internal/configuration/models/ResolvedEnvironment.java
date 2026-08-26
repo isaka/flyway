@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.With;
+import org.flywaydb.core.internal.configuration.resolvers.EnvironmentProvisionerNone;
 import org.flywaydb.core.internal.configuration.resolvers.ProvisionerMode;
 
 @Getter
@@ -58,7 +59,7 @@ public class ResolvedEnvironment {
         result.setInitSql(initSql);
         result.setJdbcProperties(jdbcProperties);
         result.setResolvers(Map.of());
-        result.setProvisioner("none");
+        result.setProvisioner(EnvironmentProvisionerNone.NAME);
         return result;
     }
 }

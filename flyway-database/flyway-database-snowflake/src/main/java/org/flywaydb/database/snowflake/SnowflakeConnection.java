@@ -25,12 +25,6 @@ import org.flywaydb.core.internal.database.base.Schema;
 
 import java.sql.SQLException;
 
-
-
-
-
-
-
 public class SnowflakeConnection extends Connection<SnowflakeDatabase> {
 
     private final String originalRole;

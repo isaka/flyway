@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-core
+ * flyway-core-utilities
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,14 +17,14 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.core.internal.logging;
+package org.flywaydb.core.utilities.logging;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 import lombok.SneakyThrows;
 import org.flywaydb.core.api.logging.Log;
 import org.flywaydb.core.api.logging.LogFactory;
-import org.flywaydb.core.internal.util.JsonUtils;
+import org.flywaydb.core.utilities.json.JsonUtils;
 
 public class JsonLog implements Log {
     private JsonMapper mapper;

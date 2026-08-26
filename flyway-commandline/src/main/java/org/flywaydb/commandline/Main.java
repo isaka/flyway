@@ -41,6 +41,7 @@ import org.flywaydb.commandline.configuration.ConfigurationManagerImpl;
 import org.flywaydb.commandline.logging.console.ConsoleLog.Level;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.FlywayTelemetryManager;
+import org.flywaydb.core.ProgressLoggerJsonFactory;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationFilter;
 import org.flywaydb.core.api.MigrationInfo;
@@ -79,7 +80,8 @@ import org.flywaydb.core.internal.reports.ReportGenerationOutputMerger;
 import org.flywaydb.core.internal.reports.ResultReportGenerator;
 import org.flywaydb.core.internal.util.CommandExtensionUtils;
 import org.flywaydb.core.internal.util.FlywayDbWebsiteLinks;
-import org.flywaydb.core.internal.util.JsonUtils;
+import org.flywaydb.core.utilities.json.JsonUtils;
+import org.flywaydb.core.utilities.progresslogger.ProgressLoggerJson;
 import org.flywaydb.core.internal.util.Pair;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.flywaydb.core.internal.util.TelemetryUtils;
@@ -105,6 +107,7 @@ public class Main {
         try {
             final CommandLineArguments commandLineArguments = new CommandLineArguments(PLUGIN_REGISTER, args);
             LOG = initLogging(Main.class, commandLineArguments);
+            ProgressLoggerJsonFactory.setSupplier(ProgressLoggerJson::new);
 
             try {
                 ReportGenerationOutput reportGenerationOutput = new ReportGenerationOutput();
@@ -120,6 +123,7 @@ public class Main {
                         return;
                     }
                     configuration = new ConfigurationManagerImpl().getConfiguration(commandLineArguments);
+                    ProxyDiagnostics.logEffectiveProxyState();
                     flywayTelemetryManager.notifyPermitChanged(LicenseGuard.getPermit(configuration));
                     flywayTelemetryManager.notifyRootConfigChanged(configuration);
                 }

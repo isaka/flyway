@@ -202,6 +202,7 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <includes>
         <include>org.flywaydb:flyway-core</include>
+        <include>org.flywaydb:flyway-core-utilities</include>
         <include>org.flywaydb:flyway-commandline</include>
         <include>org.flywaydb:flyway-database-db2</include>
         <include>org.flywaydb:flyway-database-derby</include>

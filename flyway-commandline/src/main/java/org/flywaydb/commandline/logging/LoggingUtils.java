@@ -26,7 +26,7 @@ import org.flywaydb.commandline.logging.file.FileLogCreator;
 import org.flywaydb.core.api.logging.Log;
 import org.flywaydb.core.api.logging.LogCreator;
 import org.flywaydb.core.api.logging.LogFactory;
-import org.flywaydb.core.internal.logging.JsonLogCreator;
+import org.flywaydb.core.utilities.logging.JsonLogCreator;
 import org.flywaydb.core.internal.logging.multi.MultiLogCreator;
 import org.flywaydb.mcp.McpCommandExtension;
 import org.flywaydb.mcp.McpServerLogCreator;

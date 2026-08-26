@@ -30,7 +30,9 @@ import java.util.Locale;
 public class SnowflakeParser extends Parser {
     private static final String ALTERNATIVE_QUOTE = "$$";
     private static final String ALTERNATIVE_QUOTE_SCRIPT = "DECLARE";
-    private static final List<String> CONDITIONALLY_CREATABLE_OBJECTS = Arrays.asList("COLUMN",
+    private static final List<String> CONDITIONALLY_CREATABLE_OBJECTS = Arrays.asList("AGENT",
+        "COLUMN",
+        "COMMENT",
         "CONNECTION",
         "CONSTRAINT",
         "DATABASE",
@@ -39,6 +41,7 @@ public class SnowflakeParser extends Parser {
         "GROUP",
         "INDEX",
         "INTEGRATION",
+        "MONITOR",
         "PIPE",
         "POLICY",
         "PROCEDURE",
@@ -47,15 +50,13 @@ public class SnowflakeParser extends Parser {
         "SEQUENCE",
         "STAGE",
         "STREAM",
+        "STREAMLIT",
         "TABLE",
         "TAG",
         "TASK",
         "USER",
         "VIEW",
-        "WAREHOUSE",
-        "MONITOR",
-        "COMMENT",
-        "STREAMLIT");
+        "WAREHOUSE");
 
     public SnowflakeParser(final Configuration configuration, final ParsingContext parsingContext) {
         super(configuration, parsingContext, 9);

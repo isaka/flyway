@@ -222,7 +222,8 @@ public class OracleParser extends Parser {
         }
 
         final Token previousToken = getPreviousToken(tokens, token.getParensDepth());
-        if (previousToken != null && "CASE".equals(token.getText()) && "FROM".equals(previousToken.getText())) {
+        if (previousToken != null && "CASE".equals(token.getText()) && KEYWORDS_PRECEDING_CASE_AS_IDENTIFIER.contains(
+            previousToken.getText())) {
             return false;
         }
 
@@ -231,6 +232,10 @@ public class OracleParser extends Parser {
 
     // These words increase the block depth - unless preceded by END (in which case the END will decrease the block depth)
     private static final List<String> CONTROL_FLOW_KEYWORDS = Arrays.asList("IF", "LOOP", "CASE");
+
+    // A CASE token directly after one of these words can only be an identifier, not the CASE expression keyword
+    private static final List<String> KEYWORDS_PRECEDING_CASE_AS_IDENTIFIER =
+        Arrays.asList("FROM", "INTO", "UPDATE", "JOIN", "TABLE", "AS");
 
     @Override
     protected void adjustBlockDepth(final ParserContext context,

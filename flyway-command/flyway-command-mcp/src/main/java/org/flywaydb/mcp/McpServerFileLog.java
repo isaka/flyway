@@ -29,7 +29,7 @@ import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.api.logging.Log;
 import org.flywaydb.core.api.logging.LogFactory;
-import org.flywaydb.core.internal.util.JsonUtils;
+import org.flywaydb.core.utilities.json.JsonUtils;
 import tools.jackson.databind.json.JsonMapper;
 
 /**

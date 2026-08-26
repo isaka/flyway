@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-core
+ * flyway-core-utilities
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.core.internal.configuration;
+package org.flywaydb.core.utilities.configuration;
 
 import tools.jackson.core.JacksonException.Reference;
 import tools.jackson.core.JsonToken;
@@ -32,10 +32,10 @@ import java.util.Map.Entry;
 import lombok.CustomLog;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.configuration.ClassicConfiguration;
+import org.flywaydb.core.internal.configuration.ConfigUtils;
 import org.flywaydb.core.internal.configuration.models.ConfigurationModel;
 import org.flywaydb.core.internal.configuration.models.EnvironmentModel;
 import org.flywaydb.core.internal.util.FileUtils;
-import org.flywaydb.core.internal.util.ObjectMapperFactory;
 import org.flywaydb.core.internal.util.Pair;
 
 import java.io.File;

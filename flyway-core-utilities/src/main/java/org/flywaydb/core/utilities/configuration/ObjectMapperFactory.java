@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-core
+ * flyway-core-utilities
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,13 +17,14 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.core.internal.util;
+package org.flywaydb.core.utilities.configuration;
 
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.toml.TomlMapper;
 import lombok.experimental.ExtensionMethod;
 import org.flywaydb.core.api.FlywayException;
+import org.flywaydb.core.internal.util.StringUtils;
 
 @ExtensionMethod(StringUtils.class)
 public class ObjectMapperFactory {

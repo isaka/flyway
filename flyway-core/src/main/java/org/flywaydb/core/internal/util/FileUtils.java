@@ -158,14 +158,18 @@ public class FileUtils {
     }
 
     public static String readResourceAsString(final ClassLoader classLoader, final String path) {
-        try (InputStream inputStream = classLoader.getResourceAsStream(path);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-
-            String result = "";
-            while (reader.ready()) {
-                result += reader.readLine() + System.lineSeparator();
+        try (InputStream inputStream = classLoader.getResourceAsStream(path)) {
+            if (inputStream == null) {
+                throw new FlywayException("Resource not found: " + path);
             }
-            return result;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+
+                String result = "";
+                while (reader.ready()) {
+                    result += reader.readLine() + System.lineSeparator();
+                }
+                return result;
+            }
         } catch (IOException ioe) {
             throw new FlywayException("Unable to read " + path + " from resources", ioe);
         }

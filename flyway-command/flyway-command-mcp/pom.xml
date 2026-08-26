@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.flywaydb</groupId>
     <artifactId>flyway-parent</artifactId>
-    <version>13.3.0</version>
+    <version>13.4.0</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -18,6 +18,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flyway-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>flyway-core-utilities</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>

@@ -1,6 +1,6 @@
 /*-
  * ========================LICENSE_START=================================
- * flyway-core
+ * flyway-core-utilities
  * ========================================================================
  * Copyright (C) 2010 - 2026 Red Gate Software Ltd
  * ========================================================================
@@ -17,8 +17,10 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package org.flywaydb.core;
+package org.flywaydb.core.utilities.progresslogger;
 
+import org.flywaydb.core.ProgressLogger;
+import org.flywaydb.core.ProgressModel;
 import tools.jackson.databind.json.JsonMapper;
 import lombok.CustomLog;
 import lombok.SneakyThrows;

@@ -51,7 +51,7 @@ import lombok.Setter;
 import lombok.experimental.ExtensionMethod;
 import org.flywaydb.core.ProgressLogger;
 import org.flywaydb.core.ProgressLoggerEmpty;
-import org.flywaydb.core.ProgressLoggerJson;
+import org.flywaydb.core.ProgressLoggerJsonFactory;
 import org.flywaydb.core.api.ClassProvider;
 import org.flywaydb.core.api.CoreErrorCode;
 import org.flywaydb.core.api.FlywayException;
@@ -2100,7 +2100,7 @@ public class ClassicConfiguration implements Configuration {
     @Override
     public ProgressLogger createProgress(final String operationName) {
         if (getModernFlyway().getOutputProgress() && "json".equalsIgnoreCase(getModernFlyway().getOutputType())) {
-            return new ProgressLoggerJson(operationName);
+            return ProgressLoggerJsonFactory.get(operationName);
         } else {
             return new ProgressLoggerEmpty();
         }

@@ -63,7 +63,7 @@ import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.extensibility.ConfigurationExtension;
 import org.flywaydb.core.ProgressLoggerEmpty;
 import org.flywaydb.core.internal.configuration.ConfigUtils;
-import org.flywaydb.core.internal.configuration.TomlUtils;
+import org.flywaydb.core.utilities.configuration.TomlUtils;
 import org.flywaydb.core.internal.configuration.models.ConfigurationModel;
 import org.flywaydb.core.internal.configuration.models.EnvironmentModel;
 import org.flywaydb.core.internal.configuration.models.FlywayEnvironmentModel;

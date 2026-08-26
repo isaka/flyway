@@ -25,7 +25,15 @@ if "%JAVA_ARGS%"=="" (
 )
 set EXTRA_ARGS=--enable-native-access=ALL-UNNAMED -Djava.library.path="%INSTALLDIR%\native"
 
-%JAVA_CMD% %EXTRA_ARGS% %JAVA_ARGS% -cp "%CLASSPATH%;%INSTALLDIR%\lib\*;%INSTALLDIR%\lib\plugins\*;%INSTALLDIR%\lib\aad\*;%INSTALLDIR%\lib\oracle_wallet\*;%INSTALLDIR%\lib\flyway\*;%INSTALLDIR%\lib\netty\*;%INSTALLDIR%\lib\opentelemetry\*;%INSTALLDIR%\drivers\*;%INSTALLDIR%\drivers\aws\*;%INSTALLDIR%\drivers\cassandra\*;%INSTALLDIR%\drivers\couchbase\*;%INSTALLDIR%\drivers\mongo\*" org.flywaydb.commandline.Main %*
+@REM Inherit OS-level proxy settings unless explicitly disabled. Placed before JAVA_ARGS so any
+@REM explicit -Dhttp.proxyHost etc. the user passes always wins (java honours the last -D wins).
+if /I "%FLYWAY_USE_SYSTEM_PROXIES%"=="false" (
+  set PROXY_ARGS=
+) else (
+  set PROXY_ARGS=-Djava.net.useSystemProxies=true
+)
+
+%JAVA_CMD% %EXTRA_ARGS% %PROXY_ARGS% %JAVA_ARGS% -cp "%CLASSPATH%;%INSTALLDIR%\lib\*;%INSTALLDIR%\lib\plugins\*;%INSTALLDIR%\lib\aad\*;%INSTALLDIR%\lib\oracle_wallet\*;%INSTALLDIR%\lib\flyway\*;%INSTALLDIR%\lib\netty\*;%INSTALLDIR%\lib\opentelemetry\*;%INSTALLDIR%\drivers\*;%INSTALLDIR%\drivers\aws\*;%INSTALLDIR%\drivers\cassandra\*;%INSTALLDIR%\drivers\couchbase\*;%INSTALLDIR%\drivers\mongo\*" org.flywaydb.commandline.Main %*
 
 @REM Exit using the same code returned from Java
 EXIT /B %ERRORLEVEL%

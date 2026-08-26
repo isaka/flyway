@@ -19,6 +19,8 @@
  */
 package org.flywaydb.reports;
 
+import static org.flywaydb.core.internal.reports.ReportGenerationOutputMerger.getAggregateExceptions;
+
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -28,7 +30,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,12 +43,11 @@ import org.flywaydb.core.api.output.OperationResult;
 import org.flywaydb.core.internal.configuration.models.FlywayModel;
 import org.flywaydb.core.internal.plugin.PluginRegister;
 import org.flywaydb.core.internal.reports.ReportDetails;
-import org.flywaydb.core.internal.reports.ReportGenerationConfiguration;
 import org.flywaydb.core.internal.reports.ReportPathResolver;
 import org.flywaydb.core.internal.reports.ReportGenerationOutput;
 import org.flywaydb.core.internal.reports.ResultReportGenerator;
 import org.flywaydb.core.internal.util.FileUtils;
-import org.flywaydb.core.internal.util.JsonUtils;
+import org.flywaydb.core.utilities.json.JsonUtils;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.flywaydb.reports.utils.HtmlUtils;
 import org.flywaydb.reports.utils.ReportsDeserializer;
@@ -83,16 +83,6 @@ public class OperationResultReportGenerator implements ResultReportGenerator {
         }
 
         return new ReportGenerationOutput(reportDetails, aggregateException);
-    }
-
-    private boolean shouldGenerateReport(final String operation, final Configuration configuration) {
-        return configuration.getPluginRegister()
-            .getInstancesOf(ReportGenerationConfiguration.class)
-            .stream()
-            .filter(config -> config.getReportType().equalsIgnoreCase(operation))
-            .findFirst()
-            .map(ReportGenerationConfiguration::isGenerateReport)
-            .orElse(configuration.isReportEnabled());
     }
 
     private ReportDetails writeReport(final Configuration configuration,
@@ -182,18 +172,5 @@ public class OperationResultReportGenerator implements ResultReportGenerator {
                 .max(Comparator.comparing(HtmlResult::getTimestamp)))
             .flatMap(Optional::stream)
             .toList();
-    }
-
-    private Exception getAggregateExceptions(final Collection<? extends HtmlResult> results) {
-        Exception aggregate = null;
-        final var exceptions = results.stream().map(x -> x.exceptionObject).filter(Objects::nonNull).toList();
-        for (final Exception e : exceptions) {
-            if (aggregate == null) {
-                aggregate = e;
-            } else {
-                aggregate.addSuppressed(e);
-            }
-        }
-        return aggregate;
     }
 }
